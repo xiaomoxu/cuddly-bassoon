@@ -10,6 +10,8 @@
 	<modules>
 		<module>eureka-server</module>
 		<module>config-server</module>
+		<module>stock-analyzer</module>
+		<module>stock-extractor</module>
 	</modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -38,6 +40,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+		</dependency>
+		-->
 	</dependencies>
 
 	<dependencyManagement>
