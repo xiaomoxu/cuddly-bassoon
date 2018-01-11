@@ -1,4 +1,4 @@
-package com.bassoon.stockanalyzer.domain;
+package com.bassoon.stockextractor.model;
 
 import java.io.Serializable;
 

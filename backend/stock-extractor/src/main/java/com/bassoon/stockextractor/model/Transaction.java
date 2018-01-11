@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 //"2018-01-09","70.30","71.87","1.86","2.66%","70.03","72.08","1239491","884674.06","1.14%"
 //
+
+/**
+ * @author xxu
+ * 股票 每天的交易信息 日K
+ */
 public class Transaction implements Serializable {
     private String stockCode;//股票盘编号
     private String tansDate;//交易日期

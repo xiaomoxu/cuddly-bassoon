@@ -5,6 +5,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+
 @Component
 public class StockExtractorJob {
 
@@ -12,14 +14,20 @@ public class StockExtractorJob {
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private ExportFromExcelJob exportFromExcelJob;
 
-    @Scheduled(fixedRate = ONE_Minute)
+//   /@Scheduled(fixedDelay = ONE_Minute)
     public void fetchStocksTransactionsByDuring() {
-        System.out.println("test one minutes!");
+        try {
+            exportFromExcelJob.exportMarket();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Scheduled(cron = "0 0 21 * * ?")
+//    @Scheduled(cron = "0 0 21 * * ?")
     public void fetchStocksTransactionsByDaily() {
-;
     }
+
 }

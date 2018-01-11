@@ -28,11 +28,9 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <package name="tk.mybatis.pagehelper.domain"/>
-        <package name="com.bassoon.stockanalyzer.domain.domain"/>
+        <package name="com.bassoon.stockanalyzer.domain"/>
     </typeAliases>
     <mappers>
-        <mapper resource="tk/mybatis/pagehelper/mapper/CountryMapper.xml"/>
         <mapper resource="com/bassoon/stockanalyzer/mapper/StockMapper.xml"/>
     </mappers>
 </configuration>

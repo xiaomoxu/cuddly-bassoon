@@ -21,60 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package tk.mybatis.pagehelper.domain;
 
-import java.io.Serializable;
+package com.bassoon.stockanalyzer;
 
-/**
- * @author Eddú Meléndez
- */
-public class City implements Serializable {
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
-    private static final long serialVersionUID = 1L;
 
-    private Long id;
+import java.util.List;
 
-    private String name;
+@SuppressWarnings("ALL")
+@SpringBootApplication
+@EnableEurekaClient
+public class StockAnalyzerApplication {
 
-    private String state;
 
-    private String country;
-
-    public Long getId() {
-        return this.id;
+    public static void main(String[] args) {
+        SpringApplication.run(StockAnalyzerApplication.class, args);
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getState() {
-        return this.state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getCountry() {
-        return this.country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    @Override
-    public String toString() {
-        return getId() + "," + getName() + "," + getState() + "," + getCountry();
-    }
+//    @Override
+//    public void run(String... args) throws Exception {
+//        PageHelper.startPage(1, 20);
+//        List<Country> countries = countryMapper.selectAll();
+//        System.out.println("Total: " + ((Page) countries).getTotal());
+//        for (Country country : countries) {
+//            System.out.println("Country Name: " + country.getCountryname());
+//        }
+//    }
 
 }
