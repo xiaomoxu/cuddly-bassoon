@@ -9,6 +9,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 
 public class Market extends BaseModel{
-    @JsonIgnore
     public String name;
 }

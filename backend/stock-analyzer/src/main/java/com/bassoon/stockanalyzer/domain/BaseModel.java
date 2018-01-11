@@ -5,6 +5,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 public class BaseModel {
-    @JsonIgnore
     public int identity;
 }
