@@ -1,5 +1,7 @@
 package com.bassoon.stockextractor.model;
 
-public class BaseModel {
+import java.io.Serializable;
+
+public class BaseModel implements Serializable{
     public int identity;
 }

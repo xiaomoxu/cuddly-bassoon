@@ -23,9 +23,8 @@ public class RabbitMQService {
     public String exchangeName;
 
     public void receiveMessageFromRabbitMQ(String jsonString) {
-        System.out.println(jsonString);
-        BaseModel baseModel = JsonUtils.jsonToObject(jsonString, null, BaseModel.class);
-        System.out.println(baseModel.identity);
+        Market market = JsonUtils.jsonToObject(jsonString, null, Market.class);
+        System.out.println(market.name);
     }
 
     @Bean
@@ -35,7 +34,7 @@ public class RabbitMQService {
 
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("item-queue-key");
+        return BindingBuilder.bind(queue).to(exchange).with("stock-queue-key");
     }
 
     @Bean
