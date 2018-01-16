@@ -1,6 +1,7 @@
-package com.bassoon.stockextractor.job;
+package com.bassoon.stockextractor.component;
 
 
+import com.bassoon.stockextractor.job.JsonUtils;
 import com.bassoon.stockextractor.model.Market;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,12 +15,18 @@ import org.springframework.util.ResourceUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * @author xxu
+ * 这个类负责把股票的基础数据 从excel文件中导出，通过Rabbit MQ 发送给 stock-analyzer项目，并存储到数据库中
+ */
 @Component
-public class ExportFromExcelJob {
+public class ExportStockFromXLS {
 
     private static final String EXCEL_XLSX = "xlsx";
+
     @Autowired
-    private ExtractService extractService;
+    private ProducerService producerService;
+
 
     /**
      * 导出中证500的股票成分数据
@@ -88,7 +95,8 @@ public class ExportFromExcelJob {
                 market = new Market();
                 market.name = cellValue.trim();
                 market.identity = 1;
-                this.extractService.commitStockData(market);
+                String jsonStr = JsonUtils.objectToJson(market);
+                producerService.sendMessage(jsonStr);
             }
         }
     }
@@ -108,7 +116,7 @@ public class ExportFromExcelJob {
                     continue;
                 }
                 String cellValue = cell.getStringCellValue();
-               // this.extractService.commitStockData(market);
+                // this.extractService.commitStockData(market);
             }
         }
     }
@@ -123,7 +131,7 @@ public class ExportFromExcelJob {
 
     public static void main(String argz[]) {
         try {
-            new ExportFromExcelJob().exportZZ500Stocks();
+            new ExportStockFromXLS().exportZZ500Stocks();
         } catch (IOException e) {
             e.printStackTrace();
         }
