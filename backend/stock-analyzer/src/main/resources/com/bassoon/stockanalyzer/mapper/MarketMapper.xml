@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bassoon.stockanalyzer.mapper.MarketMapper">
+    <insert id="insertMarket" parameterType="Market" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO market(name) VALUES (#{name}) ;
+    </insert>
+</mapper>
