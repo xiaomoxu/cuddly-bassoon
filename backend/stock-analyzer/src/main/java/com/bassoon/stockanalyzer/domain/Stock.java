@@ -9,7 +9,7 @@ public class Stock implements Serializable {
     private String market;//行业
     private String region;//地区
     private String belongTo;//中证50/上证500//沪深300
-    private Float weight;//所占当前板块的权重
+    private double weight;//所占当前板块的权重
     private double currentPrice;//最新价格
     private double eps;//每股收益(元)
     private double bvps;//每股净资产(元)
@@ -67,11 +67,11 @@ public class Stock implements Serializable {
         this.belongTo = belongTo;
     }
 
-    public Float getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(Float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 

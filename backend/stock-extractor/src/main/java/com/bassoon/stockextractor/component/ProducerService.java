@@ -16,7 +16,11 @@ public class ProducerService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String msg) {
+    public void sendStockMessage(String msg) {
         rabbitTemplate.convertAndSend("topicExchange", "com.bassoon.queue.stock", msg);
+    }
+
+    public void sendTransactionMessage(String msg) {
+        rabbitTemplate.convertAndSend("topicExchange", "com.bassoon.queue.transaction", msg);
     }
 }

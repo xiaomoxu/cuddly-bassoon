@@ -26,6 +26,7 @@ package com.bassoon.stockanalyzer;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +39,7 @@ import java.util.List;
 @SuppressWarnings("ALL")
 @SpringBootApplication
 @EnableEurekaClient
+@MapperScan("com.bassoon.stockanalyzer.mapper")
 public class StockAnalyzerApplication {
 
 

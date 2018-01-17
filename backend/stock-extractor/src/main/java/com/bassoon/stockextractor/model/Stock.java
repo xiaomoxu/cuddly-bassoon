@@ -1,5 +1,7 @@
 package com.bassoon.stockextractor.model;
 
+import com.bassoon.stockextractor.utils.StockUtils;
+
 import java.io.Serializable;
 
 public class Stock implements Serializable {
@@ -9,7 +11,7 @@ public class Stock implements Serializable {
     private String market;//行业
     private String region;//地区
     private String belongTo;//中证50/上证500//沪深300
-    private Float weight;//所占当前板块的权重
+    private double weight;//所占当前板块的权重
     private double currentPrice;//最新价格
     private double eps;//每股收益(元)
     private double bvps;//每股净资产(元)
@@ -17,7 +19,8 @@ public class Stock implements Serializable {
     private double totalStock;//总股本(亿股)
     private double liqui;//流通股本(亿股)
     private double ltsz;//流通市值(亿元)
-    private String information_url;//档案链接,可以继续抓相关的信息
+    private String information_url = "http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code=";
+    ;//档案链接,可以继续抓相关的信息
 
     public Long getId() {
         return id;
@@ -33,6 +36,7 @@ public class Stock implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+        this.information_url = information_url + StockUtils.getMktByCode(this.code) + code;
     }
 
     public String getName() {
@@ -67,11 +71,11 @@ public class Stock implements Serializable {
         this.belongTo = belongTo;
     }
 
-    public Float getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
@@ -137,5 +141,26 @@ public class Stock implements Serializable {
 
     public void setInformation_url(String information_url) {
         this.information_url = information_url;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "code=" + code +
+                ", name='" + name + '\'' +
+                ", market='" + market + '\'' +
+                ", region='" + region + '\'' +
+                ", belongTo='" + belongTo + '\'' +
+                ", weight=" + weight +
+                ", currentPrice=" + currentPrice +
+                ", eps=" + eps +
+                ", bvps=" + bvps +
+                ", roe=" + roe +
+                ", totalStock=" + totalStock +
+                ", liqui=" + liqui +
+                ", ltsz=" + ltsz +
+                ", information_url='" + information_url + '\'' +
+                '}';
     }
 }

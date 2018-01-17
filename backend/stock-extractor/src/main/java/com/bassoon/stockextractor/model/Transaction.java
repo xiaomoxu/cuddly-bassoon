@@ -19,6 +19,111 @@ public class Transaction implements Serializable {
     private double LowPrice;//今日最低价
     private double highPrice;//今日最高价
     private int dailyTransVolume;//今日成交量
-    private int dailyTransTurnover;//今日成交金额
-    private float changeRate;//换手率
+    private double dailyTransTurnover;//今日成交金额
+    private double changeRate;//换手率
+
+    public String getStockCode() {
+        return stockCode;
+    }
+
+    public void setStockCode(String stockCode) {
+        this.stockCode = stockCode;
+    }
+
+    public String getTansDate() {
+        return tansDate;
+    }
+
+    public void setTansDate(String tansDate) {
+        this.tansDate = tansDate;
+    }
+
+    public double getOpenPrice() {
+        return openPrice;
+    }
+
+    public void setOpenPrice(double openPrice) {
+        this.openPrice = openPrice;
+    }
+
+    public double getClosePrice() {
+        return closePrice;
+    }
+
+    public void setClosePrice(double closePrice) {
+        this.closePrice = closePrice;
+    }
+
+    public double getChangeAmount() {
+        return changeAmount;
+    }
+
+    public void setChangeAmount(double changeAmount) {
+        this.changeAmount = changeAmount;
+    }
+
+    public double getChange() {
+        return change;
+    }
+
+    public void setChange(double change) {
+        this.change = change;
+    }
+
+    public double getLowPrice() {
+        return LowPrice;
+    }
+
+    public void setLowPrice(double lowPrice) {
+        LowPrice = lowPrice;
+    }
+
+    public double getHighPrice() {
+        return highPrice;
+    }
+
+    public void setHighPrice(double highPrice) {
+        this.highPrice = highPrice;
+    }
+
+    public int getDailyTransVolume() {
+        return dailyTransVolume;
+    }
+
+    public void setDailyTransVolume(int dailyTransVolume) {
+        this.dailyTransVolume = dailyTransVolume;
+    }
+
+    public double getDailyTransTurnover() {
+        return dailyTransTurnover;
+    }
+
+    public void setDailyTransTurnover(double dailyTransTurnover) {
+        this.dailyTransTurnover = dailyTransTurnover;
+    }
+
+    public double getChangeRate() {
+        return changeRate;
+    }
+
+    public void setChangeRate(double changeRate) {
+        this.changeRate = changeRate;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "stockCode='" + stockCode + '\'' +
+                ", tansDate='" + tansDate + '\'' +
+                ", openPrice=" + openPrice +
+                ", closePrice=" + closePrice +
+                ", changeAmount=" + changeAmount +
+                ", change=" + change +
+                ", LowPrice=" + LowPrice +
+                ", highPrice=" + highPrice +
+                ", dailyTransVolume=" + dailyTransVolume +
+                ", dailyTransTurnover=" + dailyTransTurnover +
+                ", changeRate=" + changeRate +
+                '}';
+    }
 }
