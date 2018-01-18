@@ -2,6 +2,8 @@ package com.bassoon.stockextractor.controller;
 
 import com.bassoon.stockextractor.component.ExportStockFromXLS;
 import com.bassoon.stockextractor.component.ExportTransactionFromSohu;
+import com.bassoon.stockextractor.component.ProducerService;
+import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +37,7 @@ public class ExtractController {
     }
 
     @RequestMapping(value = "/extract/transaction/{start}/{end}", method = RequestMethod.GET)
-    public void downloadTransactionData(@PathVariable String start, @PathVariable String end) {
-        exportTransactionFromSohu.getTransaction("", start, end);
+    public void sendTransactionData(@PathVariable String start, @PathVariable String end) {
+        exportTransactionFromSohu.getStockDailyTransaction(start, end);
     }
-
 }

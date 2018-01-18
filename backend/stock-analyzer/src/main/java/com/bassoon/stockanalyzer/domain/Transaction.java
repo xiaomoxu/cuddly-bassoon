@@ -1,4 +1,4 @@
-package com.bassoon.stockextractor.model;
+package com.bassoon.stockanalyzer.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,17 +11,18 @@ import java.util.Date;
  * 股票 每天的交易信息 日K
  */
 public class Transaction implements Serializable {
-    private String stockCode;//股票盘编号
-    private Date tansDate;//交易日期
-    private double openPrice;//开盘价
-    private double closePrice;//收盘价
-    private double changeAmount;//涨跌额
-    private double change;//涨跌百分比
-    private double LowPrice;//今日最低价
-    private double highPrice;//今日最高价
-    private int dailyTransVolume;//今日成交量
-    private double dailyTransTurnover;//今日成交金额
-    private double changeRate;//换手率
+    private Long id;//pk
+    private String stockCode;//股票盘编号 stock_code
+    private Date tansDate;//交易日期 trans_date
+    private double openPrice;//开盘价 open_price
+    private double closePrice;//收盘价 close_price
+    private double changeAmount;//涨跌额 change_amount
+    private double change;//涨跌百分比 change_range
+    private double LowPrice;//今日最低价 low_price
+    private double highPrice;//今日最高价 high_price
+    private int dailyTransVolume;//今日成交量 daily_trans_volume
+    private double dailyTransTurnover;//今日成交金额 daily_trans_turnover
+    private double changeRate;//换手率 change_rate
 
     public String getStockCode() {
         return stockCode;

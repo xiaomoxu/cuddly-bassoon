@@ -38,7 +38,7 @@ public class JsonUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return (V) objectMapper.readValue(jsonString, elementClassType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class JsonUtils {
         JavaType javaType = getCollectionType(objectMapper, collectionClassType, elementClassType);
         try {
             return objectMapper.readValue(jsonString, javaType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

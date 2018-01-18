@@ -1,6 +1,8 @@
 package com.bassoon.stockextractor.utils;
 
-import java.util.StringTokenizer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class StockUtils {
 
@@ -29,10 +31,35 @@ public class StockUtils {
     /**
      * from historySearchHandler([
      * to    ]}
+     *
      * @return
      */
-    public static String subJsonStringFromStorkURLResponse(String jsonString){
-       return jsonString.substring(22 , jsonString.length() - 3);
+    public static String subJsonStringFromStorkURLResponse(String jsonString) {
+        return jsonString.substring(22, jsonString.length() - 3);
     }
 
+    public static String fullStockCode(String oldCode) {
+        if (oldCode.length() < 6) {
+            int zeroNumber = 6 - oldCode.length();
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < zeroNumber; i++) {
+                sb.append("0");
+            }
+            sb.append(oldCode);
+            return sb.toString();
+        }
+        return oldCode;
+    }
+
+    public static Date stringConvertToDate(String dateStr) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");//小写的mm表示的是分钟
+        Date date=sdf.parse(dateStr);
+        return date;
+    }
+
+
+    public static void main(String argz[]) {
+        String newCode = StockUtils.fullStockCode("000094");
+        System.out.println(newCode);
+    }
 }
