@@ -1,8 +1,7 @@
 package com.bassoon.stockanalyzer.mapper;
 
 import com.bassoon.stockanalyzer.domain.Stock;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -14,4 +13,12 @@ public interface StockMapper {
             "#{bvps},#{roe},#{totalStock},#{liqui},#{ltsz},#{information_url})")
     public void save(Stock stock);
 
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "total_stock", property = "totalStock"),
+            @Result(column = "current_price", property = "currentPrice"),
+            @Result(column = "belong_to", property = "belongTo")
+    })
+    @Select("SELECT * FROM stock")
+    public List<Stock> getAll();
 }
