@@ -20,7 +20,7 @@ public class ConsumerService {
     private StockMapper stockMapper;
 
     @Autowired
-    private TransactionMapper transactionMapper;
+    private TransactionService transactionService;
 
     /**
      * 从队里里面获取股票的基础数据
@@ -52,6 +52,6 @@ public class ConsumerService {
     @RabbitListener(queues = "com.bassoon.queue.transaction")
     public void processStransaction(String message) {
         Transaction transaction = JsonUtils.jsonToObject(message, null, Transaction.class);
-        transactionMapper.save(transaction);
+        transactionService.importTransaction(transaction);
     }
 }

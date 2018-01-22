@@ -2,9 +2,10 @@ package com.bassoon.stockanalyzer.wrapper;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class StockListWrapper {
+public class StockListWrapper implements Serializable{
     private List<Stock> stockList;
 
     public List<Stock> getStockList() {
