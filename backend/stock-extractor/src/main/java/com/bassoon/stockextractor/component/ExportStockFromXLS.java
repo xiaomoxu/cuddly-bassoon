@@ -9,6 +9,7 @@ import com.bassoon.stockextractor.utils.StockUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -26,6 +27,8 @@ public class ExportStockFromXLS {
 
     @Autowired
     private ProducerService producerService;
+
+    @Autowired
 
 
     /**
@@ -155,8 +158,9 @@ public class ExportStockFromXLS {
     }
 
     private static Sheet getOneSheetFromWorkboot(int sheetIndex) throws IOException {
-        FileInputStream is = new FileInputStream(ResourceUtils.getFile("classpath:cn_stock.xlsx"));
-        Workbook wb = new XSSFWorkbook(is);
+        ClassPathResource classPathResource = new ClassPathResource("cn_stock.xlsx");
+//        FileInputStream is = new FileInputStream(ResourceUtils.getFile("classpath:cn_stock.xlsx"));
+        Workbook wb = new XSSFWorkbook(classPathResource.getInputStream());
         int sheetCount = wb.getNumberOfSheets();
         Sheet sheet = wb.getSheetAt(sheetIndex);
         return sheet;
