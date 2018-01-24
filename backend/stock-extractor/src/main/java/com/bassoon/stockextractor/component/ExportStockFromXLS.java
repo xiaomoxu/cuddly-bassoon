@@ -3,6 +3,7 @@ package com.bassoon.stockextractor.component;
 
 import com.bassoon.stockextractor.job.JsonUtils;
 import com.bassoon.stockextractor.model.Market;
+import com.bassoon.stockextractor.model.Region;
 import com.bassoon.stockextractor.model.Stock;
 import com.bassoon.stockextractor.utils.StockUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -131,6 +132,7 @@ public class ExportStockFromXLS {
         int sheetIndex = 4;
         Sheet sheet = getOneSheetFromWorkboot(sheetIndex);
         int count = 0;
+        Region region = null;
         for (Row row : sheet) {
             //跳过第一行
             if (count == 0) {
@@ -142,6 +144,11 @@ public class ExportStockFromXLS {
                     continue;
                 }
                 String cellValue = cell.getStringCellValue();
+                region = new Region();
+                region.name = cellValue.trim();
+                region.identity = 1;
+                String jsonStr = JsonUtils.objectToJson(region);
+                producerService.sendStockMessage("region" + jsonStr);
                 // this.extractService.commitStockData(market);
             }
         }

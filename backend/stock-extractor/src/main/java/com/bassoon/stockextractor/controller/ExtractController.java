@@ -38,6 +38,6 @@ public class ExtractController {
 
     @RequestMapping(value = "/extract/transaction/{start}/{end}", method = RequestMethod.GET)
     public void sendTransactionData(@PathVariable String start, @PathVariable String end) {
-        exportTransactionFromSohu.getStockDailyTransaction(start, end);
+        exportTransactionFromSohu.getStockDailyTransaction(start, end, false);
     }
 }

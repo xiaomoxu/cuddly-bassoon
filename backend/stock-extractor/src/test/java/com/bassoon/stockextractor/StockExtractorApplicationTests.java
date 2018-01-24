@@ -3,6 +3,7 @@ package com.bassoon.stockextractor;
 import com.bassoon.stockextractor.component.ExportTransactionFromSohu;
 import com.bassoon.stockextractor.component.ProducerService;
 import com.bassoon.stockextractor.model.Stock;
+import com.bassoon.stockextractor.utils.StockUtils;
 import com.netflix.discovery.converters.Auto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +22,14 @@ public class StockExtractorApplicationTests {
 
     @Test
     public void getStockTransaction() {
-        exportTransactionFromSohu.getStockDailyTransaction("20180115", "20180115");
+        try {
+            exportTransactionFromSohu.getTransaction(StockUtils.fullStockCode("2345"), "20180101", "20180115", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void testTransactionJson(){
+    public void testTransactionJson() {
 
     }
 }

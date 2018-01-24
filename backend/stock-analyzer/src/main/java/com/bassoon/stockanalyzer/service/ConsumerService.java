@@ -1,9 +1,11 @@
 package com.bassoon.stockanalyzer.service;
 
 import com.bassoon.stockanalyzer.domain.Market;
+import com.bassoon.stockanalyzer.domain.Region;
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.domain.Transaction;
 import com.bassoon.stockanalyzer.mapper.MarketMapper;
+import com.bassoon.stockanalyzer.mapper.RegionMapper;
 import com.bassoon.stockanalyzer.mapper.StockMapper;
 import com.bassoon.stockanalyzer.mapper.TransactionMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -21,6 +23,9 @@ public class ConsumerService {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private RegionMapper regionMapper;
 
     /**
      * 从队里里面获取股票的基础数据
@@ -42,6 +47,11 @@ public class ConsumerService {
             stockMapper.save(stock);
         }
 
+        if (message.startsWith("region")) {
+            message = message.substring(6);
+            Region region = JsonUtils.jsonToObject(message, null, Region.class);
+            regionMapper.save(region);
+        }
     }
 
     /**
