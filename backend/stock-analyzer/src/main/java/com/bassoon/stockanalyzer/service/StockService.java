@@ -90,4 +90,16 @@ public class StockService {
             return null;
         }
     }
+
+    /**
+     * 根据是股票的所属成分板块进行查询HS300 ZZ500 SZ50
+     *
+     * @param belongTo
+     * @return
+     */
+    public StockListWrapper getStocksByBelongTo(String belongTo) {
+        StockListWrapper stocks = new StockListWrapper();
+        stocks.setStockList(this.stockMapper.findStocksByBeloneTo(belongTo));
+        return stocks;
+    }
 }
