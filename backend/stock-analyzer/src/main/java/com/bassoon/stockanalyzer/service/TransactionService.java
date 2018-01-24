@@ -21,20 +21,9 @@ public class TransactionService {
     @Autowired
     private TransactionMapper transactionMapper;
 
-    private List<String> haveDoneCodeList = new ArrayList<String>();
 
     public void importTransaction(Transaction transaction) {
-        if (!this.isHaveDone(transaction.getStockCode())) {
-            transactionMapper.save(transaction);
-        }
+        transactionMapper.save(transaction);
     }
 
-    private boolean isHaveDone(String stockCode) {
-        if (haveDoneCodeList.contains(stockCode)) {
-            System.err.println(stockCode + " has already done! It is a duplicate record!");
-            return true;
-        }
-        this.haveDoneCodeList.add(stockCode);
-        return false;
-    }
 }

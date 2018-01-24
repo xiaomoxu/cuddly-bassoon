@@ -33,13 +33,10 @@ public interface StockMapper {
     public List<Stock> getAll();
 
     @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "total_stock", property = "totalStock"),
-            @Result(column = "current_price", property = "currentPrice"),
-            @Result(column = "belong_to", property = "belongTo")
+            @Result(column = "code", property = "String"),
     })
-    @Select("select DISTINCT code,id,total_stock, from stock")
-    public List<Stock> getAllAndRemoveDuplicate();
+    @Select("select code from stock group by code")
+    public List<String> getStockCodeAndRemoveDuplicate();
 
     /**
      * 获得既是沪深300又是上证50的股票
@@ -54,4 +51,20 @@ public interface StockMapper {
     })
     @Select("select * from stock a where code in  (select code from stock group by code  having count(*) > 1)")
     public List<Stock> getStocksInSZ50AndHS300();
+
+
+    /**
+     * 根据股票code获得股票对象 注意因为stock表中存在即是50 又是300的股票 也就是说明同一个code有可能有两条记录
+     * 所以这个方法返回的结果不一定是唯一的 所以返回集合
+     * @param code
+     * @return
+     */
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "total_stock", property = "totalStock"),
+            @Result(column = "current_price", property = "currentPrice"),
+            @Result(column = "belong_to", property = "belongTo")
+    })
+    @Select("SELECT * FROM stock where code = #{code}")
+    public List<Stock> findStockByCode(@Param("code") String code);
 }

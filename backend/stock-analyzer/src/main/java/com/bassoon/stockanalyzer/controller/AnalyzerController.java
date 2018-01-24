@@ -17,4 +17,9 @@ public class AnalyzerController {
     public StockListWrapper getAllStock() {
         return stockService.getAllStock();
     }
+
+    @RequestMapping(value = "/stocklist-unique", method = RequestMethod.GET)
+    public StockListWrapper getAllStockRemoveDuplication() {
+        return stockService.getStocksRemoveDuplicateByCode();
+    }
 }

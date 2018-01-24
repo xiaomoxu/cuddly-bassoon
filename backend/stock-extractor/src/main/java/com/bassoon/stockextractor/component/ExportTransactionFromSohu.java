@@ -73,7 +73,7 @@ public class ExportTransactionFromSohu {
     }
 
     public void getStockDailyTransaction(String start, String end) {
-        StockListWrapper stockListWrapper = restTemplate.getForObject(restAnalyzerHost + "/stocklist", StockListWrapper.class);
+        StockListWrapper stockListWrapper = restTemplate.getForObject(restAnalyzerHost + "/stocklist-unique", StockListWrapper.class);
         for (Stock stock : stockListWrapper.getStockList()) {
             try {
                 this.getTransaction(StockUtils.fullStockCode(stock.getCode()), start, end);
