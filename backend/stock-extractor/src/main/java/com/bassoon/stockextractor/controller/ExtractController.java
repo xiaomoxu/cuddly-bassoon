@@ -34,6 +34,9 @@ public class ExtractController {
         if (jobName.equals("ZZ500")) {
             this.exportStockFromXLS.exportZZ500Stocks();
         }
+        if(jobName.equals("region")){
+            this.exportStockFromXLS.exportRegion();
+        }
     }
 
     @RequestMapping(value = "/extract/transaction/{start}/{end}", method = RequestMethod.GET)
