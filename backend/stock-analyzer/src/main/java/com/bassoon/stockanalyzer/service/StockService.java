@@ -2,7 +2,10 @@ package com.bassoon.stockanalyzer.service;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.mapper.StockMapper;
+import com.bassoon.stockanalyzer.model.PageResult;
 import com.bassoon.stockanalyzer.wrapper.StockListWrapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class StockService {
@@ -55,24 +55,30 @@ public class StockService {
      *
      * @return
      */
-    public StockListWrapper getStocksRemoveDuplicateByCode() {
-        ValueOperations<String, StockListWrapper> ops = this.redisTemplate.opsForValue();
-        String key = "get-stock-unduplicate";
-        StockListWrapper stocks = null;
+    public PageResult<Stock> getStocksRemoveDuplicateByCode(int page, int limit) {
+        ValueOperations<String, List<Stock>> ops = this.redisTemplate.opsForValue();
+        String key = page + "_get-stock-unduplicate";
+        List<Stock> stocks = new LinkedList<Stock>();
+        PageResult<Stock> result = new PageResult<Stock>();
         if (!this.redisTemplate.hasKey(key)) {
-            stocks = new StockListWrapper();
+            PageHelper.startPage(page, limit);
             List<String> stockCodeList = stockMapper.getStockCodeAndRemoveDuplicate();
+            long total = ((Page) stockCodeList).getTotal();
+            result.setPage(page);
+            result.setLimit(limit);
+            result.setTotal(total);
             Stock stock = null;
             for (String code : stockCodeList) {
                 stock = findUniqueStock(code);
                 if (stock == null) continue;
-                stocks.getStockList().add(stock);
+                stocks.add(stock);
             }
+            result.setResult(stocks);
             ops.set(key, stocks);
         } else {
             stocks = ops.get(key);
         }
-        return stocks;
+        return result;
     }
 
     /**
@@ -97,9 +103,20 @@ public class StockService {
      * @param belongTo
      * @return
      */
-    public StockListWrapper getStocksByBelongTo(String belongTo) {
-        StockListWrapper stocks = new StockListWrapper();
-        stocks.setStockList(this.stockMapper.findStocksByBeloneTo(belongTo));
-        return stocks;
+    public PageResult<Stock> getStocksByBelongTo(String belongTo, int page, int limit) {
+        PageResult<Stock> stockPageResult = new PageResult<Stock>();
+        PageHelper.startPage(page, limit);
+        List<Stock> stocks = null;
+        if (belongTo.equals("union")) {
+            stocks = this.stockMapper.getStocksInSZ50AndHS300();
+        } else {
+            stocks = this.stockMapper.findStocksByBeloneTo(belongTo);
+        }
+        stockPageResult.setResult(stocks);
+        long total = ((Page) stocks).getTotal();
+        stockPageResult.setPage(page);
+        stockPageResult.setLimit(limit);
+        stockPageResult.setTotal(total);
+        return stockPageResult;
     }
 }
