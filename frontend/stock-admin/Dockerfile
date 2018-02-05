@@ -8,5 +8,7 @@ WORKDIR /home/frontend
 COPY . /home/frontend
 RUN npm install
 
+#Export 4200 port
+
 EXPOSE 4200
 CMD [ "npm", "start" ]
