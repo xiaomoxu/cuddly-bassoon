@@ -10,5 +10,5 @@ logger.info("log->introapi.url.py")
 
 urlpatterns = [
     url(r'^$', views.introapilist, name='introapilist'),
-    #url(r'^stock/$', views.stock_all, name='stock_all'),
+    url(r'^stock/$', views.stock_all, name='stock_all'),
 ]
