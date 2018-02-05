@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul>
+    <li><p> {{ trader }} </p></li>
+    <li><p> {{ trader.e_mail }} </p></li>
+    <li><p> {{ trader.org_name }} </p></li>
+    <li><p> {{ trader.points }} </p></li>
+	{% for stock in trader.stock_set.all %}
+    <li><h2> {{ stock }}, {{ stock.Rating}} </h2></li>
+        {% endfor %}
+</ul>
+{% endblock %}

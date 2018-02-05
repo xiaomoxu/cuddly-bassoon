@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if all_traders %}
+    <ul>
+    {% for trader in all_traders %}
+	<li> <p><a href="/trading/trader/{{ trader.name }}/">{{ trader.name }}</a></p> </li>
+    {% endfor %}
+    </ul>
+{% else %}
+	<p>No traders are available.</p>
+{% endif %}
+{% endblock %}

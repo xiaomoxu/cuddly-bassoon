@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2> Add Stock </h2>
+<form action='/trading/add_stock/' method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Submit" />
+ </form>
+{% endblock %}
