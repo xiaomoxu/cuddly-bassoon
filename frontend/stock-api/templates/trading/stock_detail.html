@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul>
+    <li><p> {{ stock }} </p></li>
+    <li><p> {{ stock.cur_price }} </p></li>
+    <li><p> {{ stock.predict_price }} </p></li>
+    <li><p> {{ stock.Rating }} </p></li>
+    <li><p> {{ stock.trader.name }} </p></li>
+    <li><p> {{ stock.trader.e_mail }} </p></li>
+</ul>
+{% endblock %}

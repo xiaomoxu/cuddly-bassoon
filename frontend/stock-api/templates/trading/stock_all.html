@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if all_stocks %}
+	<ul>
+	{% for stock in all_stocks %}
+		<li>{{ stock.stock_name }}</a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No stocks are available.</p>
+{% endif %}
+{% endblock %}
