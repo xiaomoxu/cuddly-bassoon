@@ -24,7 +24,7 @@ export class Sz50TableComponent {
     },
     columns: {
       code: {
-        title: '代码',
+        title: 'code',
       },
       name: {
         title: '名称',

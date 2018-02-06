@@ -13,7 +13,12 @@ const routes: Routes = [{
   }, {
     path: 'tables',
     loadChildren: './tables/tables.module#TablesModule',
-  }, {
+  }, 
+   {
+    path: 'charts',
+    loadChildren: './charts/charts.module#ChartsModule',
+  },  
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
