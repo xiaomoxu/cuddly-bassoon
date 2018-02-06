@@ -1,4 +1,4 @@
-FROM hub.c.163.com/nce2/nodejs:0.12.2
+FROM docker.io/node:latest
 
 # Create app directory
 RUN mkdir -p /home/frontend
@@ -10,5 +10,5 @@ RUN npm install
 
 #Export 4200 port
 
-EXPOSE 4200
+EXPOSE 4201
 CMD [ "npm", "start" ]
