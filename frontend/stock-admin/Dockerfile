@@ -1,3 +1,4 @@
+#sudo docker -t stockadmin:v1
 FROM docker.io/node:latest
 
 # Create app directory
