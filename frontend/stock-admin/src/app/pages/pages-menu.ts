@@ -29,6 +29,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+    {
+    title: '数据曲线',
+    icon: 'nb-bar-chart',
+    children: [
+      {
+        title: '曲线汇总',
+        link: '/pages/charts/echarts',
+      },
+    ],
+  },
   {
     title: 'Auth',
     icon: 'nb-locked',
