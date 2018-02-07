@@ -15,6 +15,8 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author xxu
@@ -165,6 +167,49 @@ public class ExportStockFromXLS {
         Sheet sheet = wb.getSheetAt(sheetIndex);
         return sheet;
     }
+
+    /**
+     * 我又得了到了一份全面的股票列表，把这个表中的股票代码和名字导入到新的数据库里
+     * 暂时先写在这里，以后重构
+     */
+    public List<String> importStockListExcelToDatabase() {
+        int count = 0;
+        String information_url = "http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code=";
+        List<String> urlList = new LinkedList<String>();
+        for (int i = 0; i < 3; i++) {
+            ClassPathResource classPathResource = new ClassPathResource("stocklist.xlsx");
+            Workbook wb = null;
+            try {
+                wb = new XSSFWorkbook(classPathResource.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int sheetCount = wb.getNumberOfSheets();
+            Sheet sheet = wb.getSheetAt(i);
+            for (Row row : sheet) {
+                Cell cell1 = row.getCell(0);//code
+                Cell cell2 = row.getCell(1);//name
+                try {
+                    String cell1String = cell1.getStringCellValue();
+                    urlList.add(information_url + StockUtils.getMktByCode(cell1String) + cell1String);
+                } catch (Exception e) {
+                    Double cell1Double = cell1.getNumericCellValue();
+                    urlList.add(information_url + StockUtils.getMktByCode(StockUtils.convertStockCodeToString(cell1Double)) + StockUtils.convertStockCodeToString(cell1Double));
+                }
+//                try {
+//                    String cell2String = cell2.getStringCellValue();
+//                    System.out.println(cell2String);
+//                } catch (Exception e) {
+//                    Double cell2Double = cell2.getNumericCellValue();
+//                    System.out.println(cell2Double);
+//                }
+                count++;
+            }
+        }
+        System.out.println(count);
+        return urlList;
+    }
+
 
     public static void main(String argz[]) {
         try {

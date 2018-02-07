@@ -5,12 +5,11 @@ import com.bassoon.stockextractor.component.ExportTransactionFromSohu;
 import com.bassoon.stockextractor.component.ProducerService;
 import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class ExtractController {
@@ -34,13 +33,25 @@ public class ExtractController {
         if (jobName.equals("ZZ500")) {
             this.exportStockFromXLS.exportZZ500Stocks();
         }
-        if(jobName.equals("region")){
+        if (jobName.equals("region")) {
             this.exportStockFromXLS.exportRegion();
         }
+        if (jobName.equals("stocklist")) {
+            this.exportStockFromXLS.importStockListExcelToDatabase();
+        }
+    }
+
+    @GetMapping(value = "/stocklist/url", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public List<String> getStocksURL(HttpServletResponse rsp) {
+        List<String> urlList = this.exportStockFromXLS.importStockListExcelToDatabase();
+        rsp.addHeader("X-Total-Count", String.valueOf(urlList.size()));
+        return urlList;
     }
 
     @RequestMapping(value = "/extract/transaction/{start}/{end}", method = RequestMethod.GET)
     public void sendTransactionData(@PathVariable String start, @PathVariable String end) {
         exportTransactionFromSohu.getStockDailyTransaction(start, end, false);
     }
+
 }
