@@ -8,28 +8,32 @@ import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
+import java.util.Properties;
+
 public class SparkTest {
     public static void main(String argz[]) {
-        SparkSession spark = SparkSession.builder().config(new SparkConf().setAppName("myapp").setMaster("spark://dlndevtrux1l01.dev.rocketsoftware.com:7077")).getOrCreate();
-        Dataset<Row> peopleDF = spark.read().json("D:\\work\\project\\github\\cuddly-bassoon\\backend\\stock-analyzer\\src\\main\\resources\\people.json");
+        System.setProperty("hadoop.home.dir", "C:\\home\\xxu\\github\\hadoop-common-2.2.0-bin\\");
 
-        // DataFrames can be saved as Parquet files, maintaining the schema information
-        peopleDF.write().parquet("people.parquet");
+        SparkConf sparkConf = new SparkConf().setAppName("myapp").set("spark.cores.max", "4").setMaster("spark://10.20.116.107:7077");
 
-        // Read in the Parquet file created above.
-        // Parquet files are self-describing so the schema is preserved
-        // The result of loading a parquet file is also a DataFrame
-        Dataset<Row> parquetFileDF = spark.read().parquet("people.parquet");
+        SparkContext sc = new SparkContext(sparkConf);
 
-        // Parquet files can also be used to create a temporary view and then used in SQL statements
-        parquetFileDF.createOrReplaceTempView("parquetFile");
-        Dataset<Row> namesDF = spark.sql("SELECT name FROM parquetFile WHERE age BETWEEN 13 AND 19");
-        Dataset<String> namesDS = namesDF.map(
-                (MapFunction<Row, String>) row -> "Name: " + row.getString(0),
-                Encoders.STRING());
-        namesDS.show();
-        spark.stop();
+        SparkSession spark = SparkSession.builder().config(sc.getConf()).getOrCreate();
 
+        Dataset<Row> jdbcDF = spark.read()
+                .format("jdbc")
+                .option("url", "jdbc:mysql://10.20.116.107:3306/CN_STOCK?characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull")
+                .option("dbtable", "stock")
+                .option("user", "root")
+                .option("password", "R0cket!@#")
+                .load();
+        jdbcDF.show();
+
+//        Properties connectionProperties = new Properties();
+//        connectionProperties.put("user", "username");
+//        connectionProperties.put("password", "password");
+//        Dataset<Row> jdbcDF2 = spark.read()
+//                .jdbc("jdbc:mysql://10.20.116.107:3306/CN_STOCK?characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull", "schema.tablename", connectionProperties);
 
 
     }
