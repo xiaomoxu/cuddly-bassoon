@@ -32,7 +32,7 @@ public class SparkConfig {
 
     @Bean
     public SparkConf sparkConf() {
-        System.setProperty("hadoop.home.dir", hadoopHome);//好像只有针对windwos系统有效果
+        System.setProperty("hadoop.home.dir", hadoopHome);//好像只有针对windwos系统有效果>linux下这句话无效
         return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri);
     }
 

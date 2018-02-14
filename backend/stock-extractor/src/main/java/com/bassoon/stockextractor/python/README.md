@@ -18,5 +18,9 @@
  1.mysql Unknow error 1170 python tushare可能会根据某个字段建立索引，这个时候如果这个字段是text类型的，那么可能会遇到1170error，解决办法是把这个字段改成varchar 255长度，因为第一次执行的时候报错，但是表已经给建好了，只是建立索引的时候失败，
  直接修改column，然后根据错误提示重新建立索引就可以了。
  2.1049, 'Unknown error 1049' 这个问题是建数据库的时候字节编码不正确造成的，建议使用UTF-8编码，用navicat建，我用mysqladmin建的，但是一样报这个错，不知道为什么，可能是方言不一样导致的。
- 3.导入创业板，中小板数据问题和解决办法 :'[date] not in index' 修改一下cons.py中的 FOR_CLASSIFY_B_COLS = ['date','code','name'],把date去掉就可以了
- 4.导入stock history的时候同样报1170错误，参考问题1，日期类型改成timestamp
+ 3.'[date] not in index' 修改一下cons.py中的 FOR_CLASSIFY_B_COLS = ['date','code','name'],把date去掉就可以了
+ 4.历史交易数据使用to json生成字符串的时候，里面缺少了date字段和值，是因为源码作者用date作为数据索引，所以pandas不把date作为字段排列，除非是使用'index' to json
+    我修改了trading.py 中的代码：
+                # df = df.set_index('date')
+                # df = df.sort_index(ascending = False)
+                # 注释掉以上两行就可以了 应该是在97 98行

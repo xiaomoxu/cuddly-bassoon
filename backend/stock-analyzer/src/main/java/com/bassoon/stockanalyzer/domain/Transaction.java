@@ -9,7 +9,9 @@ import java.util.Date;
 /**
  * @author xxu
  * 股票 每天的交易信息 日K
+ * 这个类未来将被TransactionHistory取代
  */
+@Deprecated
 public class Transaction implements Serializable {
     private Long id;//pk
     private String stockCode;//股票盘编号 stock_code

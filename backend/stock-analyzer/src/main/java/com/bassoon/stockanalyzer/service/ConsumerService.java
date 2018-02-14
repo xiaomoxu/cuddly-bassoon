@@ -1,22 +1,22 @@
 package com.bassoon.stockanalyzer.service;
 
-import com.bassoon.stockanalyzer.domain.Market;
-import com.bassoon.stockanalyzer.domain.Region;
-import com.bassoon.stockanalyzer.domain.Stock;
-import com.bassoon.stockanalyzer.domain.Transaction;
-import com.bassoon.stockanalyzer.mapper.MarketMapper;
-import com.bassoon.stockanalyzer.mapper.RegionMapper;
-import com.bassoon.stockanalyzer.mapper.StockMapper;
-import com.bassoon.stockanalyzer.mapper.TransactionMapper;
+import com.bassoon.stockanalyzer.domain.*;
+import com.bassoon.stockanalyzer.mapper.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ConsumerService {
 
+    protected static final Logger logger = LoggerFactory.getLogger(ConsumerService.class);
     @Autowired
-    private MarketMapper marketMapper;
+    public MarketMapper marketMapper;
 
     @Autowired
     private StockMapper stockMapper;
@@ -27,11 +27,15 @@ public class ConsumerService {
     @Autowired
     private RegionMapper regionMapper;
 
+    @Autowired
+    private StockHistoryMapper stockHistoryMapper;
+
     /**
      * 从队里里面获取股票的基础数据
      *
      * @param message
      */
+    @Deprecated
     @RabbitListener(queues = "com.bassoon.queue.stock")
     public void processStock(String message) {
         if (message.startsWith("market")) {
@@ -60,8 +64,30 @@ public class ConsumerService {
      * @param message
      */
     @RabbitListener(queues = "com.bassoon.queue.transaction")
-    public void processStransaction(String message) {
-        Transaction transaction = JsonUtils.jsonToObject(message, null, Transaction.class);
-        transactionService.importTransaction(transaction);
+    public void processTransaction(String message) {
+        try {
+            StringBuffer sbu = new StringBuffer();
+            String[] chars = message.split(",");
+            for (int i = 0; i < chars.length; i++) {
+                sbu.append((char) Integer.parseInt(chars[i]));
+            }
+            String value = sbu.toString();
+            String code = value.substring(0, 6);
+            String jsonBody = value.substring(7, value.length());
+            System.out.println(code);
+            System.out.println(jsonBody);
+            sbu = null;
+            List<StockHistory> historyList = JsonUtils.jsonToObject(jsonBody, ArrayList.class, StockHistory.class);
+            for (StockHistory history : historyList) {
+//            System.out.println(history.getVolume());
+                history.setStockCode(code);
+                this.stockHistoryMapper.save(history);
+//            logger.debug(history.getVolume() + "");
+            }
+//        Transaction transaction = JsonUtils.jsonToObject(message, null, Transaction.class);
+//        transactionService.importTransaction(transaction);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
