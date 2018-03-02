@@ -8,50 +8,76 @@ export const MENU_ITEMS: NbMenuItem[] = [
     home: true,
   },
   {
-    title: '基础数据',
+    title: '成分数据',
     icon: 'nb-tables',
     children: [
       {
-        title: '成分数据',
-        children: [
-          {
-            title: '上证50成分',
-            link: '/pages/tables/sz50',
-          },
-          {
-            title: '沪深300成分',
-            link: '/pages/tables/hs300',
-          },
-          {
-            title: '中证500成分',
-            link: '/pages/tables/zz500',
-          },
-          {
-            title: '50&300交集成分',
-            link: '/pages/tables/union',
-          },
-        ],
+        title: '上证50',
+        link: '/pages/tables/sz50',
       },
       {
-        title: '个股数据',
-        children: [
-          {
-            title: '沪市A股',
-            link: '/pages/tables/sz50',
-          },
-          {
-            title: '深市A股',
-            link: '/pages/tables/hs300',
-          },
-          {
-            title: '中小板',
-            link: '/pages/tables/zz500',
-          },
-          {
-            title: '创业板',
-            link: '/pages/tables/union',
-          },
-        ],
+        title: '沪深300',
+        link: '/pages/tables/hs300',
+      },
+      {
+        title: '中证500',
+        link: '/pages/tables/zz500',
+      },
+      {
+        title: '50&300交集',
+        link: '/pages/tables/union',
+      },
+      {
+        title: '沪市A股',
+        // link: '/pages/tables/sz50',
+      },
+      {
+        title: '深市A股',
+        // link: '/pages/tables/hs300',
+      },
+      {
+        title: '中小板',
+        // link: '/pages/tables/zz500',
+      },
+      {
+        title: '创业板',
+        // link: '/pages/tables/union',
+      },
+    ],
+  },
+  {
+    title: '分类数据',
+    icon: 'nb-tables',
+    children: [
+      {
+        title: '行业分类',
+        link: '/pages/tables/sz50',
+      },
+      {
+        title: '概念分类',
+        link: '/pages/tables/hs300',
+      },
+      {
+        title: '地域分类',
+        link: '/pages/tables/zz500',
+      },
+    ],
+  },
+  {
+    title: '基本面数据',
+    icon: 'nb-tables',
+    children: [
+      {
+        title: '业绩报告',
+        // link: '/pages/tables/sz50',
+      },
+      {
+        title: '营运能力',
+        // link: '/pages/tables/hs300',
+      },
+      {
+        title: '成长能力',
+        // link: '/pages/tables/zz500',
       },
     ],
   },
@@ -64,37 +90,33 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/charts/echarts',
       },
       {
-        title: '二八轮动',
-        link: '/pages/charts/echarts',
-      },
-      {
-        title: '短期上涨',
-        link: '/pages/charts/echarts',
-      },
-      {
         title: '短期放量',
-        link: '/pages/charts/echarts',
+        // link: '/pages/charts/echarts',
       },
       {
         title: '昨日重现',
-        link: '/pages/charts/echarts',
+        // link: '/pages/charts/echarts',
       },
       {
-        title: '日线上穿',
-        link: '/pages/charts/echarts',
-      },
-      {
-        title: '策略回溯',
-        link: '/pages/charts/echarts',
+        title: '二八轮动',
+        // link: '/pages/charts/echarts',
       },
     ],
   },
   {
     title: '智能顾投',
-    icon: 'nb-bar-chart',
+    icon: 'fa fa fa-chart-line',
     children: [
       {
-        title: 'AI风控与组合',
+        title: '风险评估',
+        link: '/pages/charts/echarts',
+      },
+      {
+        title: '智能组合',
+        link: '/pages/charts/echarts',
+      },
+      {
+        title: '未来预期',
         link: '/pages/charts/echarts',
       },
     ],

@@ -31,6 +31,14 @@ public class AnalyzerController {
         return (List<Stock>) result.getResult();
     }
 
+    /**
+     * URL sample: http://localhost:9002/stocklist/SZ50?_page=1&_limit=10
+     * @param rsp
+     * @param belongTo
+     * @param _page
+     * @param _limit
+     * @return
+     */
     @GetMapping(value = "/stocklist/{belongTo}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
     public List<Stock> getStocksByBelongTo(HttpServletResponse rsp, @PathVariable String belongTo, @RequestParam("_page") int _page, @RequestParam("_limit") int _limit) {

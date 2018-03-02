@@ -15,12 +15,15 @@ import {AppRoutingModule} from './app-routing.module';
 import {ThemeModule} from './@theme/theme.module';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
+import { NgxEchartsModule } from 'ngx-echarts';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpModule,
+    NgxEchartsModule,
     AppRoutingModule,
 
     NgbModule.forRoot(),
@@ -35,4 +38,4 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 export class AppModule {
 }
 
-export const serverURL: string = 'http://10.20.118.28:9002/';
+export const serverURL: string = 'http://localhost:9002/';
