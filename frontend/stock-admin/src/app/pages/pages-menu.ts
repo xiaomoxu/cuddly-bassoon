@@ -61,7 +61,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     children: [
       {
         title: 'K线图',
-        link: '/pages/charts/echarts',
+        link: '/pages/kline',
       },
       {
         title: '二八轮动',

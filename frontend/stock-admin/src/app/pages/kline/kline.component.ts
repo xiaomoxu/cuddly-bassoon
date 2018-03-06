@@ -7,6 +7,7 @@ import {Component, OnInit} from '@angular/core';
 })
 
 export class KlineComponent implements OnInit {
+
   options: any;
 
   constructor() { }
@@ -58,7 +59,7 @@ export class KlineComponent implements OnInit {
       }
     };
   }
-}`;
+};
 
   options: any;
 
