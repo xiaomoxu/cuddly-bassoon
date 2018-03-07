@@ -5,9 +5,17 @@ import {Component, OnInit} from '@angular/core';
   templateUrl: './kline.component.html',
   styleUrls: ['./kline.component.scss']
 })
-
 export class KlineComponent implements OnInit {
+  demo_html = `<div echarts [options]="options" class="demo-chart"></div>`;
+  demo_ts = `\
+import { Component, OnInit } from '@angular/core';
 
+@Component({
+  selector: 'app-basic',
+  templateUrl: './kline.component.html',
+  styleUrls: ['./kline.component.scss']
+})
+export class KlineComponent implements OnInit {
   options: any;
 
   constructor() { }
@@ -59,7 +67,7 @@ export class KlineComponent implements OnInit {
       }
     };
   }
-};
+}`;
 
   options: any;
 
