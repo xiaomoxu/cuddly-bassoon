@@ -17,7 +17,11 @@ const routes: Routes = [{
    {
     path: 'charts',
     loadChildren: './charts/charts.module#ChartsModule',
-  },  
+  },
+  {
+    path: 'kline',
+    loadChildren: './kline/kline.module#KlineModule',
+  }, 
   {
     path: '',
     redirectTo: 'dashboard',
