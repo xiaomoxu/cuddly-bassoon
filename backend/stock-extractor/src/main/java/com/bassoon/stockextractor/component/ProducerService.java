@@ -15,6 +15,7 @@ import java.util.List;
  * Rabbit MQ 组件
  */
 @Service
+@Deprecated
 public class ProducerService {
     @Autowired
     private RabbitTemplate rabbitTemplate;

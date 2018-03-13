@@ -1,6 +1,6 @@
-import tushare as ts
+# 这个api将被抛弃，请使用k_history_fetching.py
 import pika
-from sqlalchemy import create_engine
+import tushare as ts
 
 stock_basics = ts.get_stock_basics()
 codeArray = stock_basics.index

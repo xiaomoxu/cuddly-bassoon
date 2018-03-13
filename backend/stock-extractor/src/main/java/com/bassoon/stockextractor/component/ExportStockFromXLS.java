@@ -23,6 +23,7 @@ import java.util.List;
  * 这个类负责把股票的基础数据 从excel文件中导出，通过Rabbit MQ 发送给 stock-analyzer项目，并存储到数据库中
  */
 @Component
+@Deprecated
 public class ExportStockFromXLS {
 
     private static final String EXCEL_XLSX = "xlsx";
@@ -38,6 +39,7 @@ public class ExportStockFromXLS {
      *
      * @throws IOException
      */
+
     public void exportZZ500Stocks() throws IOException {
         exportStockBySheet(0, "ZZ500");
     }
@@ -172,6 +174,7 @@ public class ExportStockFromXLS {
      * 我又得了到了一份全面的股票列表，把这个表中的股票代码和名字导入到新的数据库里
      * 暂时先写在这里，以后重构
      */
+    @Deprecated
     public List<String> importStockListExcelToDatabase() {
         int count = 0;
         String information_url = "http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code=";

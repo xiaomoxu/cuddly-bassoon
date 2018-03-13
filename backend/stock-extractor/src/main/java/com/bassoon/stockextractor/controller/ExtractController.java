@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@Deprecated
 public class ExtractController {
     @Autowired
     private ExportStockFromXLS exportStockFromXLS;

@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Component
+@Deprecated
 public class ExportTransactionFromSohu {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

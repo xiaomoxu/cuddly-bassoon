@@ -3,6 +3,7 @@ package com.bassoon.stockextractor.job;
 /**
  * @author xxu
  */
+@Deprecated
 public class RequestParams {
     private String stockCode;
     private String startData;
