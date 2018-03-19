@@ -2,6 +2,8 @@ package com.bassoon.stockanalyzer.controller;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.model.PageResult;
+import com.bassoon.stockanalyzer.policy.TwoEightNode;
+import com.bassoon.stockanalyzer.policy.TwoEightRotation;
 import com.bassoon.stockanalyzer.service.StockService;
 import com.bassoon.stockanalyzer.wrapper.StockListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ import java.util.List;
 public class AnalyzerController {
     @Autowired
     private StockService stockService;
+
+    @Autowired
+    private TwoEightRotation twoEightRotation;
 
 
     @RequestMapping(value = "/stocklist", method = RequestMethod.GET)
@@ -54,4 +59,11 @@ public class AnalyzerController {
         return result;
     }
 
+    @GetMapping(value = "/week-line-spark/{type}", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public List<TwoEightNode> getLineFor500WeekData(HttpServletResponse rsp, @PathVariable String type) {
+        List<TwoEightNode> nodeList = twoEightRotation.getWeekData(type);
+        rsp.addHeader("X-Total-Count", String.valueOf(nodeList.size()));
+        return nodeList;
+    }
 }

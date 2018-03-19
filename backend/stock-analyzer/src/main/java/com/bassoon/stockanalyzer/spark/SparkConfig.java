@@ -3,16 +3,12 @@ package com.bassoon.stockanalyzer.spark;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 @Configuration
@@ -33,12 +29,14 @@ public class SparkConfig {
     @Bean
     public SparkConf sparkConf() {
         System.setProperty("hadoop.home.dir", hadoopHome);//好像只有针对windwos系统有效果>linux下这句话无效
-        return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri);
+        return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri).
+                setJars(new String[]{"C:\\home\\xxu\\github\\cuddly-bassoon\\backend\\stock-analyzer\\target\\stock-analyzer-0.0.1-SNAPSHOT.jar.original"});
     }
 
     @Bean
     public SparkContext sparkContext() {
-        return new SparkContext(sparkConf());
+        SparkContext sparkContext = new SparkContext(sparkConf());
+        return sparkContext;
     }
 
     @Bean

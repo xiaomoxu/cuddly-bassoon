@@ -2,6 +2,7 @@ package com.bassoon.stockanalyzer.spark;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
+import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -21,16 +22,12 @@ public class SparkTest {
         Dataset<Row> jdbcDF = spark.read()
                 .format("jdbc")
                 .option("url", "jdbc:mysql://10.20.116.107:3306/CN_BASSOON?characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull")
-                .option("dbtable", "area")
+                .option("dbtable", "stock_hs_k_data")
                 .option("user", "root")
                 .option("password", "Liaobi()7595k")
                 .load();
         jdbcDF.persist();
-        List<Row> rows = jdbcDF.collectAsList();
-        for (Row row : rows) {
-            System.out.println((String) row.getAs("code"));
-        }
-
+        jdbcDF.show();
 //        Properties connectionProperties = new Properties();
 //        connectionProperties.put("user", "username");
 //        connectionProperties.put("password", "password");
