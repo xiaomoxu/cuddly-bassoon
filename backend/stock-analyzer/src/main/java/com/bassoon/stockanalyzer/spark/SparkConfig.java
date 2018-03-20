@@ -26,11 +26,14 @@ public class SparkConfig {
     @Value("${hadoop.home.dir}")
     private String hadoopHome;
 
+    @Value("${jar.file.path}")
+    private String jarFile;
+
     @Bean
     public SparkConf sparkConf() {
         System.setProperty("hadoop.home.dir", hadoopHome);//好像只有针对windwos系统有效果>linux下这句话无效
         return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri).
-                setJars(new String[]{"C:\\home\\xxu\\github\\cuddly-bassoon\\backend\\stock-analyzer\\target\\stock-analyzer-0.0.1-SNAPSHOT.jar.original"});
+                setJars(new String[]{jarFile});
     }
 
     @Bean

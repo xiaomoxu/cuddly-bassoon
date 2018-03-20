@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-VOLUME /tmp
+VOLUME /stock
 ADD stock-analyzer-0.0.1-SNAPSHOT.jar stock-analyzer-0.0.1-SNAPSHOT.jar
 ADD stock-analyzer-0.0.1-SNAPSHOT.jar.original stock-analyzer-0.0.1-SNAPSHOT.jar.original
 RUN sh -c 'touch /stock-analyzer-0.0.1-SNAPSHOT.jar'
