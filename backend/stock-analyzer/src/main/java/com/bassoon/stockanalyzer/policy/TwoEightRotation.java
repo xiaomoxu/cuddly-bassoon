@@ -22,7 +22,7 @@ public class TwoEightRotation implements Serializable {
         Dataset<Row> dataset = sparkRepository.getDatasetByTable(table);
         dataset.createOrReplaceTempView(table);
         dataset = dataset.sqlContext().sql("select * from " + table + " where date >= '2007-01-19'");
-        dataset = dataset.persist(StorageLevel.MEMORY_AND_DISK());
+        dataset.persist(StorageLevel.MEMORY_AND_DISK());
         JavaRDD<Row> resultRDD = dataset.toJavaRDD();
         JavaRDD<TwoEightNode> ds = resultRDD.map(new Function<Row, TwoEightNode>() {
             TwoEightNode previousNode = null;
