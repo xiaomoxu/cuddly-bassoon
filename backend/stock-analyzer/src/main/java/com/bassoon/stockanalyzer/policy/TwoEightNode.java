@@ -5,30 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 
 public class TwoEightNode implements Serializable {
-    private double money = 5000;//当前资产,初始投入资金5000元
     private String date;
-    private Double close;
-    private TwoEightNode previousNode;
+    private double zzclose;
+    private double hsclose;
+    private double hsMoney = 5000;
+    private double zzMoney = 5000;
 
-    public TwoEightNode(Double close, String date) {
-        this.close = close;
-        this.date = date;
-    }
-
-    public double getMoney() {
-        return money;
-    }
-
-    public void setMoney(double money) {
-        this.money = money;
-    }
-
-    public void calulateMoney() {
-        if (this.previousNode != null) {
-            double change = (double) ((this.close - previousNode.getClose()) / previousNode.getClose());
-            this.money = Math.round(previousNode.getMoney() * (1 + change));
-        }
-    }
+    @JsonIgnore
+    private TwoEightNode previousNode = null;
 
     public String getDate() {
         return date;
@@ -38,17 +22,45 @@ public class TwoEightNode implements Serializable {
         this.date = date;
     }
 
-    public Double getClose() {
-        return close;
+    public void setZzclose(double zzclose) {
+        this.zzclose = zzclose;
     }
 
-    public void setClose(Double close) {
-        this.close = close;
+    public void setHsclose(double hsclose) {
+        this.hsclose = hsclose;
     }
 
-    @JsonIgnore
-    public TwoEightNode getPreviousNode() {
-        return previousNode;
+    public double getHsMoney() {
+        return hsMoney;
+    }
+
+    public void setHsMoney(double hsMoney) {
+        this.hsMoney = hsMoney;
+    }
+
+    public double getZzMoney() {
+        return zzMoney;
+    }
+
+    public void setZzMoney(double zzMoney) {
+        this.zzMoney = zzMoney;
+    }
+
+    public double getZzclose() {
+        return zzclose;
+    }
+
+    public double getHsclose() {
+        return hsclose;
+    }
+
+    public void calulateMoney() {
+        if (this.previousNode != null) {
+            double change = (double) ((this.zzclose - previousNode.getZzclose()) / previousNode.getZzclose());
+            this.zzMoney = Math.round(previousNode.getZzMoney() * (1 + change));
+            change = (double) ((this.hsclose - previousNode.getHsclose()) / previousNode.getHsclose());
+            this.hsMoney = Math.round(previousNode.getHsMoney() * (1 + change));
+        }
     }
 
     public void setPreviousNode(TwoEightNode previousNode) {
