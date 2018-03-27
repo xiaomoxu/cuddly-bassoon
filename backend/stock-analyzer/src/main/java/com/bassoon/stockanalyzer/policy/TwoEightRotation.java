@@ -66,8 +66,6 @@ public class TwoEightRotation implements Serializable {
         return ds.collectAsList();
     }
 
-    private TwoEightNode previousNode = null;
-
     public List<TwoEightNode> generateTwoEightRatationData() {
         String[] tables = new String[]{"stock_zz_k_data", "stock_hs_k_data"};
         List<Dataset<Row>> dss = new ArrayList<Dataset<Row>>();
@@ -83,7 +81,6 @@ public class TwoEightRotation implements Serializable {
         ds = ds.sort("date");
         ds = ds.persist(StorageLevel.MEMORY_AND_DISK());
         Dataset<TwoEightNode> _ds = ds.map(new MapFunction<Row, TwoEightNode>() {
-            TwoEightNode previousNode = null;
 
             @Override
             public TwoEightNode call(Row row) throws Exception {
@@ -95,11 +92,6 @@ public class TwoEightRotation implements Serializable {
                     node.setDate(date);
                     node.setHsclose(hsclose);
                     node.setZzclose(zzclose);
-                    node.setPreviousNode(previousNode);
-                    node.calulateMoney();
-                    System.out.println(date + "||" + node.getHsMoney() + "||" + node.getZzMoney() + "||" + previousNode);
-                    previousNode = node;
-                    System.out.println(date + "|| aaa" + node.getHsMoney() + "||" + node.getZzMoney() + "||" + previousNode);
                     return node;
                 }
                 return null;
@@ -114,6 +106,23 @@ public class TwoEightRotation implements Serializable {
                 return false;
             }
         });
-        return _ds.collectAsList();
+        List<TwoEightNode> nodes = _ds.collectAsList();
+        int nodesSize = nodes.size();
+        TwoEightNode previousNode = null;
+        TwoEightNode currentNode = null;
+        TwoEightNode compareNode = null;
+        for (int i = 0; i < nodesSize; i++) {
+            //计算basic收益
+            currentNode = nodes.get(i);
+            currentNode.setPreviousNode(previousNode);
+            currentNode.calulateBasicMoney();
+            //计算轮动收益
+            if (i - 3 >= 0) {
+                currentNode.calculateAdvancedMoney(nodes.get(i - 3));
+                currentNode.calculateAdvancedMoney2(nodes.get(i - 3));//如果四周数值比较后，涨幅小于0，那么空仓
+            }
+            previousNode = currentNode;
+        }
+        return nodes;
     }
 }
