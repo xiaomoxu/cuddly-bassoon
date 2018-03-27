@@ -6,6 +6,8 @@ import com.bassoon.stockanalyzer.policy.TwoEightNode;
 import com.bassoon.stockanalyzer.policy.TwoEightNode2;
 import com.bassoon.stockanalyzer.policy.TwoEightRotation;
 import com.bassoon.stockanalyzer.service.StockService;
+import com.bassoon.stockanalyzer.statistic.StockStatisticService;
+import com.bassoon.stockanalyzer.statistic.StockValue;
 import com.bassoon.stockanalyzer.wrapper.StockListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ public class AnalyzerController {
 
     @Autowired
     private TwoEightRotation twoEightRotation;
+
+    @Autowired
+    private StockStatisticService stockStatisticService;
 
 
     @RequestMapping(value = "/stocklist", method = RequestMethod.GET)
@@ -68,11 +73,17 @@ public class AnalyzerController {
         return nodeList;
     }
 
-    @GetMapping(value = "/tow-eight-rotation/{table}", produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "/stock-static/{key}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
-    public List<TwoEightNode2> getLineForTwoEightRotationData(HttpServletResponse rsp, @PathVariable String table) {
-        List<TwoEightNode2> nodeList = twoEightRotation.getWeekData(table);
-        rsp.addHeader("X-Total-Count", String.valueOf(nodeList.size()));
+    public List<StockValue> getDataByStockWithCity(HttpServletResponse rsp, @PathVariable String key) {
+        List<StockValue> nodeList = stockStatisticService.staticStockByKey(key);
         return nodeList;
     }
+//    @GetMapping(value = "/tow-eight-rotation/{table}", produces = "application/json;charset=UTF-8")
+//    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+//    public List<TwoEightNode2> getLineForTwoEightRotationData(HttpServletResponse rsp, @PathVariable String table) {
+//        List<TwoEightNode2> nodeList = twoEightRotation.getWeekData(table);
+//        rsp.addHeader("X-Total-Count", String.valueOf(nodeList.size()));
+//        return nodeList;
+//    }
 }
