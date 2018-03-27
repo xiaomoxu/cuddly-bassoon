@@ -68,7 +68,7 @@ public class AnalyzerController {
     @GetMapping(value = "/tow-eight-rotation", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
     public List<TwoEightNode> getLineForTwoEightRotationData(HttpServletResponse rsp) {
-        List<TwoEightNode> nodeList = twoEightRotation.generateTwoEightRatationData();
+        List<TwoEightNode> nodeList = twoEightRotation.generateTwoEightRatationData(false);
         rsp.addHeader("X-Total-Count", String.valueOf(nodeList.size()));
         return nodeList;
     }
@@ -76,7 +76,7 @@ public class AnalyzerController {
     @GetMapping(value = "/stock-static/{key}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
     public List<StockValue> getDataByStockWithCity(HttpServletResponse rsp, @PathVariable String key) {
-        List<StockValue> nodeList = stockStatisticService.staticStockByKey(key);
+        List<StockValue> nodeList = stockStatisticService.staticStockByKey(key, false);
         return nodeList;
     }
 //    @GetMapping(value = "/tow-eight-rotation/{table}", produces = "application/json;charset=UTF-8")

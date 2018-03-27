@@ -1,26 +1,20 @@
 package com.bassoon.stockanalyzer.policy;
 
+import com.bassoon.stockanalyzer.service.JsonUtils;
 import com.bassoon.stockanalyzer.spark.SparkRepository;
 import com.bassoon.stockanalyzer.utils.DateUtils;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FilterFunction;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.expressions.Window;
-import org.apache.spark.sql.expressions.WindowSpec;
-import org.apache.spark.sql.types.StructType;
 import org.apache.spark.storage.StorageLevel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import scala.reflect.ClassTag;
+import redis.clients.jedis.Jedis;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 public class TwoEightRotation implements Serializable {
@@ -66,7 +60,32 @@ public class TwoEightRotation implements Serializable {
         return ds.collectAsList();
     }
 
-    public List<TwoEightNode> generateTwoEightRatationData() {
+    /**
+     * 二八轮动业务，一共4条线
+     * reload = true 表示每次都重新通过spark计算，然后覆盖缓存
+     * false 表示直接从缓存取
+     *
+     * @return
+     */
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redisport}")
+    private int port;
+
+    public List<TwoEightNode> generateTwoEightRatationData(boolean reload) {
+        Jedis jedis = new Jedis(host, port);
+        if (!reload) {
+            //先从缓存取
+//            List<TwoEightNode> result = (List<TwoEightNode>) this.sparkJedisRepository.get("tow_eight", List.class, TwoEightNode.class);
+            String json = jedis.get("two_eight");
+            if(json != null && !json.equals("")){
+                List<TwoEightNode> result = JsonUtils.jsonToObject(json, List.class, TwoEightNode.class);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
         String[] tables = new String[]{"stock_zz_k_data", "stock_hs_k_data"};
         List<Dataset<Row>> dss = new ArrayList<Dataset<Row>>();
         for (String table : tables) {
@@ -123,6 +142,11 @@ public class TwoEightRotation implements Serializable {
             }
             previousNode = currentNode;
         }
+        jedis.set("two_eight", JsonUtils.objectToJson(nodes));
         return nodes;
+    }
+
+    public static void main(String argz[]) {
+
     }
 }
