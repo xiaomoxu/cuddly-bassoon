@@ -535,9 +535,9 @@ function init_echartarea() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-static/city",
+            url: "http://10.20.118.28:9002/stock-static/city",
             dataType: "json",
-            timeout: 1000,
+            timeout: 500,
             beforeSend: function (xhr) {
                 myChart.showLoading();
             },
@@ -562,7 +562,7 @@ function init_echartarea() {
 
             },
             error: function (errorMsg) {
-                console.log("zz data get failed");
+                console.log("data get failed");
             }
         })).done(function () {
 
@@ -591,9 +591,8 @@ function init_echartarea() {
             }).slice(0, 6))
                 ];
 
-
         option = {
-            backgroundColor: 'rgba(73, 84, 101, 0.63)',
+            backgroundColor: 'rgba(252, 252, 252, 0.54)',
             animation: true,
             animationDuration: 1000,
             animationEasing: 'cubicInOut',
@@ -601,21 +600,21 @@ function init_echartarea() {
             animationEasingUpdate: 'cubicInOut',
             title: [
                 {
-                    text: '全国主要城市',
-                    subtext: 'data from api',
+                    text: '',
+                    subtext: '',
                     sublink: '',
                     left: 'center',
                     textStyle: {
-                        color: '#fff'
+                        color: 'rgba(247, 7, 71, 0.99)'
                     }
             },
                 {
                     id: 'statistic',
-                    right: 120,
-                    top: 40,
+                    right: 100,
+                    top: 30,
                     width: 100,
                     textStyle: {
-                        color: '#fff',
+                        color: 'rgba(2, 2, 2, 0.96)',
                         fontSize: 16
                     }
             }
@@ -623,16 +622,16 @@ function init_echartarea() {
             toolbox: {
                 iconStyle: {
                     normal: {
-                        borderColor: '#fff'
+                        borderColor: '#000000'
                     },
                     emphasis: {
-                        borderColor: '#b1e4ff'
+                        borderColor: '#000000'
                     }
                 }
             },
             brush: {
                 outOfBrush: {
-                    color: '#abc'
+                    color: 'rgba(194, 232, 69, 1)'
                 },
                 brushStyle: {
                     borderWidth: 2,
@@ -641,15 +640,15 @@ function init_echartarea() {
                 },
                 seriesIndex: [0, 1],
                 throttleType: 'debounce',
-                throttleDelay: 300,
+                throttleDelay: 50,
                 geoIndex: 0
             },
             geo: {
                 map: 'china',
                 left: '5',
-                right: '10%',
-                center: [117.98561551896913, 31.205000490896193],
-                zoom: 0.6,
+                right: '5%',
+                center: [125.98561551896913, 36.205000490896193],
+                zoom: 0.52,
                 label: {
                     emphasis: {
                         show: false
@@ -658,11 +657,11 @@ function init_echartarea() {
                 roam: true,
                 itemStyle: {
                     normal: {
-                        areaColor: 'rgba(82, 170, 203, 0.26)',
+                        areaColor: 'rgba(15, 72, 119, 0.92)',
                         borderColor: '#fff'
                     },
                     emphasis: {
-                        areaColor: 'rgba(18, 133, 232, 0.2)'
+                        areaColor: 'rgba(244, 24, 75, 0.87)'
                     }
                 }
             },
@@ -670,7 +669,7 @@ function init_echartarea() {
                 trigger: 'item'
             },
             grid: {
-                right: 40,
+                right: 60,
                 top: 100,
                 bottom: 40,
                 width: '30%'
@@ -681,7 +680,7 @@ function init_echartarea() {
                 position: 'top',
                 boundaryGap: false,
                 splitLine: {
-                    show: false
+                    show: true
                 },
                 axisLine: {
                     show: false
@@ -690,7 +689,7 @@ function init_echartarea() {
                     show: false
                 },
                 axisLabel: {
-                    margin: 2,
+                    margin: 1,
                     textStyle: {
                         color: '#aaa'
                     }
@@ -698,12 +697,12 @@ function init_echartarea() {
             },
             yAxis: {
                 type: 'category',
-                name: 'TOP 20',
+                name: 'TOP',
                 nameGap: 16,
                 axisLine: {
                     show: false,
                     lineStyle: {
-                        color: '#ddd'
+                        color: '#000000'
                     }
                 },
                 axisTick: {
@@ -714,15 +713,16 @@ function init_echartarea() {
                 },
                 axisLabel: {
                     interval: 0,
+                    fontWeight:'bolder',
                     textStyle: {
-                        color: '#ddd'
+                        color: '#000000'
                     }
                 },
                 data: []
             },
             series: [
                 {
-                    name: 'pm2.5',
+                    name: '城市',
                     type: 'scatter',
                     coordinateSystem: 'geo',
                     data: convertedData[0],
@@ -741,19 +741,20 @@ function init_echartarea() {
                     },
                     itemStyle: {
                         normal: {
-                            color: '#ed1a22'
+                            color: '#f40d31'
                         }
                     }
             },
                 {
                     name: 'Top 5',
                     type: 'effectScatter',
+                    effectType:"ripple",
                     coordinateSystem: 'geo',
                     data: convertedData[1],
                     symbolSize: function (val) {
                         return Math.max(val[2] / 10, 8);
                     },
-                    showEffectOn: 'emphasis',
+                    //showEffectOn: 'emphasis',
                     rippleEffect: {
                         brushType: 'stroke'
                     },
@@ -762,14 +763,23 @@ function init_echartarea() {
                         normal: {
                             formatter: '{b}',
                             position: 'right',
-                            show: true
+                            show: true,
+                            color:"#fa0a0a",
+                            fontStyle:"normal",
+                            fontWeight:"bolder",
+                            fontSize:13
                         }
                     },
                     itemStyle: {
                         normal: {
-                            color: '#e9f209',
-                            shadowBlur: 10,
-                            shadowColor: '#333'
+                            color:"#ff0000", 
+                            borderColor:"#000",
+                            borderWidth:0,
+                            shadowBlur:10,
+                            shadowColor:"#000",
+                            shadowOffsetX:0,
+                            shadowOffsetY:0,
+                            opacity:1
                         }
                     },
                     zlevel: 1
@@ -781,7 +791,7 @@ function init_echartarea() {
                     symbol: 'none',
                     itemStyle: {
                         normal: {
-                            color: '#3e3ee3'
+                            color: 'rgba(56, 56, 203, 0.85)'
                         }
                     },
                     data: []
@@ -798,7 +808,7 @@ function init_echartarea() {
                     {
                         geoIndex: 0,
                         brushType: 'polygon',
-                        coordRange: [[119.72, 34.85], [119.68, 34.85], [119.5, 34.84], [119.19, 34.77], [118.76, 34.63], [118.6, 34.6], [118.46, 34.6], [118.33, 34.57], [118.05, 34.56], [117.6, 34.56], [117.41, 34.56], [117.25, 34.56], [117.11, 34.56], [117.02, 34.56], [117, 34.56], [116.94, 34.56], [116.94, 34.55], [116.9, 34.5], [116.88, 34.44], [116.88, 34.37], [116.88, 34.33], [116.88, 34.24], [116.92, 34.15], [116.98, 34.09], [117.05, 34.06], [117.19, 33.96], [117.29, 33.9], [117.43, 33.8], [117.49, 33.75], [117.54, 33.68], [117.6, 33.65], [117.62, 33.61], [117.64, 33.59], [117.68, 33.58], [117.7, 33.52], [117.74, 33.5], [117.74, 33.46], [117.8, 33.44], [117.82, 33.41], [117.86, 33.37], [117.9, 33.3], [117.9, 33.28], [117.9, 33.27], [118.09, 32.97], [118.21, 32.7], [118.29, 32.56], [118.31, 32.5], [118.35, 32.46], [118.35, 32.42], [118.35, 32.36], [118.35, 32.34], [118.37, 32.24], [118.37, 32.14]]
+                        coordRange: [[120.97,38.82],[121.23,39.06],[121.55,39.11],[121.85,39.49],[121.95,39.45],[121.99,38.88],[121.80,38.82],[121.36,38.73]]
                 }
             ]
             });
@@ -847,7 +857,8 @@ function init_echartarea() {
                 },
                 title: {
                     id: 'statistic',
-                    text: count ? '平均: ' + (sum / count).toFixed(4) : ''
+                    //text: count ? '平均: ' + (sum / count).toFixed(4) : ''
+                    text:''
                 },
                 series: {
                     id: 'bar',
@@ -866,7 +877,6 @@ function init_echartarea() {
         alert("we failed to get the data for this echart");
         console.log("we failed to get the data for this echart!");　　　　
     });
-
 
 }
 
