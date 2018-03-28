@@ -198,68 +198,68 @@ function init_DataTables() {
     $('#datatable').dataTable({
         "ajax": {
             "type": "GET",
-            //"url": "http://10.48.6.219:9002/stocklist-spark",
-            "url": "table.json",
+            "url": "http://10.20.118.28:9002/stocklist-spark",
+            //"url": "table.json",
             "dataType": "json",
             "contentType": "application/x-www-form-urlencoded; charset=UTF-8"
         },
         "columns": [
-            //{"title":"序号", "data": "id"},
+
             {
-                "title": "股票代码",
+                "title": "Code",
                 "data": "code"
             },
             {
-                "title": "名称",
+                "title": "Name",
                 "data": "name"
             },
             {
-                "title": "行业",
+                "title": "Market",
                 "data": "market"
             },
             {
-                "title": "地区",
+                "title": "Region",
                 "data": "region"
             },
             {
-                "title": "板块",
+                "title": "Block",
                 "data": "belongTo"
             },
             {
-                "title": "权重",
+                "title": "Weight",
                 "data": "weight"
             },
             {
-                "title": "最新价",
+                "title": "latest price",
                 "data": "currentPrice"
             },
             {
-                "title": "每股收益(元)",
+                "title": "EPS",
                 "data": "eps"
             },
             {
-                "title": "每股净资产(元)",
+                "title": "BVPS",
                 "data": "bvps"
             },
             {
-                "title": "净资产收益率(%)",
+                "title": "ROE",
                 "data": "roe"
             },
             {
-                "title": "总股本(亿股)",
+                "title": "TotalStock",
                 "data": "totalStock"
             },
             {
-                "title": "流通股本(亿股)",
+                "title": "LIQUI",
                 "data": "liqui"
             },
             {
-                "title": "流通市值(亿元)",
+                "title": "LTSZ",
                 "data": "ltsz"
             },
             //{"title":"详细地址", "data": "ltsz"}
             ],
-
+/*
         "columnDefs": [
             {
                 "render": function (data, type, row) {
@@ -279,6 +279,7 @@ function init_DataTables() {
         "createdRow": function (row, data, index) {
             ////创建行之后的操作
         },
+        */
     });
     //add by wp 
 
@@ -329,7 +330,7 @@ function init_DataTables() {
 
 $(document).ready(function () {
 
-    console.log("temp.js")
+    console.log("DataTable.js")
     init_sidebar();
     init_DataTables();
 });
