@@ -31,8 +31,6 @@
 })(jQuery, 'smartresize');
 
 
-
-
 // Sidebar
 function init_sidebar() {
 
@@ -144,193 +142,130 @@ function init_sidebar() {
 };
 // /Sidebar
 
-function init_DataTables() {
+function init_echart() {
 
-    if (typeof ($.fn.DataTable) === 'undefined') {
+    if (typeof (echarts) === 'undefined') {
         return;
     }
-    console.log('init_DataTables');
 
+    var echartLine = echarts.init(document.getElementById('echart_line'))
+    var xAxisdata = [],seriesdata_hs = [],seriesdata_zz = [],seriesdata_rotation=[]
 
-    var handleDataTableButtons = function () {
-        if ($("#datatable-buttons").length) {
-            $("#datatable-buttons").DataTable({
-                dom: "Blfrtip",
-                buttons: [
-                    {
-                        extend: "copy",
-                        className: "btn-sm"
-						},
-                    {
-                        extend: "csv",
-                        className: "btn-sm"
-						},
-                    {
-                        extend: "excel",
-                        className: "btn-sm"
-						},
-                    {
-                        extend: "pdfHtml5",
-                        className: "btn-sm"
-						},
-                    {
-                        extend: "print",
-                        className: "btn-sm"
-						},
-					  ],
-                responsive: true
-            });
-        }
-    };
-
-    TableManageButtons = function () {
-        "use strict";
-        return {
-            init: function () {
-                handleDataTableButtons();
+    $.when(
+        $.ajax({
+            type: "get",
+            async: false,
+            url: "http://10.48.6.219:9002/tow-eight-rotation",
+            dataType: "json",
+            timeout: 1000,
+            beforeSend: function (xhr) {
+                echartLine.showLoading();
+            },
+            success: function (dataresult) {
+                echartLine.hideLoading();
+                console.log(dataresult)
+                if (dataresult) {
+                    for (var i = 0; i < dataresult.length; i++) {
+                        xAxisdata.push(dataresult[i].date);
+                        seriesdata_hs.push(dataresult[i].hsMoney);
+                        seriesdata_zz.push(dataresult[i].zzMoney);
+                        seriesdata_rotation.push(dataresult[i].rotationMoney);
+                    }
+                }
+            },
+            error: function (errorMsg) {
+                console.log("zz data get failed");
             }
-        };
-    }();
+        })).done(function () {
 
-
-    //$('#datatable').dataTable();
-    //add by wp
-    $('#datatable').dataTable({
-        "ajax": {
-            "type": "GET",
-            "url": "http://10.20.118.28:9002/stocklist-spark",
-            //"url": "table.json",
-            "dataType": "json",
-            "contentType": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        "columns": [
-
-            {
-                "title": "Code",
-                "data": "code"
+        echartLine.hideLoading();
+        console.log("done");
+        
+        echartLine.setOption({
+            tooltip: {
+                trigger: 'axis'
             },
-            {
-                "title": "Name",
-                "data": "name"
+            legend: {
+                data: ['hsMoney', 'zzMoney','rotationMoney']
             },
-            {
-                "title": "Market",
-                "data": "market"
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataZoom: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['line', 'bar', 'stack', 'tiled']
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
             },
-            {
-                "title": "Region",
-                "data": "region"
+            calculable: true,
+            dataZoom: {
+                show: true,
+                realtime: true,
+                start: 20,
+                end: 80
             },
-            {
-                "title": "Block",
-                "data": "belongTo"
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: xAxisdata
             },
-            {
-                "title": "Weight",
-                "data": "weight"
-            },
-            {
-                "title": "latest price",
-                "data": "currentPrice"
-            },
-            {
-                "title": "EPS",
-                "data": "eps"
-            },
-            {
-                "title": "BVPS",
-                "data": "bvps"
-            },
-            {
-                "title": "ROE",
-                "data": "roe"
-            },
-            {
-                "title": "TotalStock",
-                "data": "totalStock"
-            },
-            {
-                "title": "LIQUI",
-                "data": "liqui"
-            },
-            {
-                "title": "LTSZ",
-                "data": "ltsz"
-            },
-            //{"title":"详细地址", "data": "ltsz"}
-            ],
-/*
-        "columnDefs": [
-            {
-                "render": function (data, type, row) {
-                    //data为当前列的数据
-                    //type为当前列数据类型
-                    //row为当前行数据
-                    var rowData = JSON.stringify(row);
-                    var str = "<a class='herf='javascript:void(0)' onclick='changeModal(" + rowData + ")'>联系人</a>";
-                    return str;
-                    //此处return可自己定义，博主此处举例为超链接，传参须注意，若传字符串需加上转义字符，否则会报错ReferenceError: XXX is not defined at HTMLAnchorElement.onclick
-                },
-                //此处target负数表示从右向左的顺序
-                //-1为右侧第一列 
-                "targets": -1
-                   }
-                  ],
-        "createdRow": function (row, data, index) {
-            ////创建行之后的操作
-        },
+            yAxis: [
+                {
+                    type: 'value'
+                    }],
+            series: [
+                {
+                    name: 'hsMoney',
+                    type: 'line',
+                    data: seriesdata_hs
+                        },
+                {
+                    name: 'zzMoney',
+                    type: 'line',
+                    data: seriesdata_zz
+                        },
+                {
+                    name: 'rotationMoney',
+                    type: 'line',
+                    data: seriesdata_rotation
+                        }
+               ]
+        });        
+        /* 
+        //debug info
+        var tmp11 = echartLine.getOption();
+        var dz = tmp11.dataZoom[0];
+        console.log(tmp11);
+        console.log(dz);
+        //debug info
         */
-    });
-    //add by wp 
-
-
-    $('#datatable-keytable').DataTable({
-        keys: true
+    }).fail(function () {
+        echartLine.hideLoading();
+        alert("we failed to get the data for this echart");        
+        console.log("we failed to get the data for this echart!");　　　　
     });
 
-    $('#datatable-responsive').DataTable();
+}
 
 
-    $('#datatable-scroller').DataTable({
-        ajax: "js/datatables/json/scroller-demo.json",
-        deferRender: true,
-        scrollY: 380,
-        scrollCollapse: true,
-        scroller: true
-    });
-
-    $('#datatable-fixed-header').DataTable({
-        fixedHeader: true
-    });
-
-    var $datatable = $('#datatable-checkbox');
-
-    $datatable.dataTable({
-        'order': [[1, 'asc']],
-        'columnDefs': [
-            {
-                orderable: false,
-                targets: [0]
-            }
-				  ]
-    });
-
-    $datatable.on('draw.dt', function () {
-        $('checkbox input').iCheck({
-            checkboxClass: 'icheckbox_flat-green'
-        });
-    });
-
-    TableManageButtons.init();
-
-
-
-
-};
 
 $(document).ready(function () {
-
-    console.log("DataTable.js")
+    console.log("EchartLocal.js")
     init_sidebar();
-    init_DataTables();
+    init_echart();
 });

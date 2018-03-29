@@ -8,11 +8,11 @@ from sqlalchemy import create_engine
 # print(history_scale)
 
 codeArray = []
-codeArray.append('399300')
-codeArray.append('399905')
-codeArray.append('399006')
-codeArray.append('399005')
-codeArray.append('000001')
+codeArray.append(['stock_hs_k_data', '399300'])
+codeArray.append(['stock_zz_k_data', '399905'])
+codeArray.append(['stock_cyb_k_data', '399006'])
+codeArray.append(['stock_zxb_k_data', '399005'])
+codeArray.append(['stock_sz_k_data', '000001'])
 
 engine = create_engine('mysql://root:Liaobi()7595k@10.20.116.107/CN_BASSOON?charset=utf8')
 
@@ -34,13 +34,13 @@ class myThread(threading.Thread):
 
 def saveToDatabase(startTime, endTime):
     for code in codeArray:
-        print("%s: %s : %s" % (code, time.ctime(time.time()), code))
+        print("%s: %s : %s" % (code[0], time.ctime(time.time()), code[1]))
         # history_hfq = ts.get_k_data(code, start=startTime, end=endTime, ktype='D', autype=threadID)
-        history_scale = ts.get_k_data(code, index=True, start=startTime, end=endTime)  # 上证
-        history_scale.to_sql(code, engine, if_exists='append')
+        history_scale = ts.get_k_data(code[1], index=True, start=startTime, end=endTime)  # 上证
+        history_scale.to_sql(code[0], engine, if_exists='append')
 
 
-thread1 = myThread('2000-01-01', '2018-03-07')
+thread1 = myThread('2000-01-01', '2018-03-14')
 # 开启新线程
 thread1.start()
 print("所有线程都已启动!")

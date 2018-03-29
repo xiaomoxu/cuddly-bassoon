@@ -25,7 +25,8 @@ public class DateUtils {
 
     public static void main(String argz[]) {
 //        System.out.println(Math.round((double) ((3.0 - 5.1) / 5.0) * 100) / 100.0);
-        System.out.println(compareDataWith20070119("2007-01-20"));
+//        System.out.println(compareDataWith20070119("2007-01-20"));
+        System.out.println(DateUtils.dateToWeek("2007-02-09"));
     }
 
     public static int compareDataWith20070119(String compared) {
