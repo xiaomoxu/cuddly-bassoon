@@ -2,9 +2,7 @@ package com.bassoon.stockanalyzer.controller;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.model.PageResult;
-import com.bassoon.stockanalyzer.policy.TwoEightNode;
-import com.bassoon.stockanalyzer.policy.TwoEightNode2;
-import com.bassoon.stockanalyzer.policy.TwoEightRotation;
+import com.bassoon.stockanalyzer.policy.*;
 import com.bassoon.stockanalyzer.service.StockService;
 import com.bassoon.stockanalyzer.statistic.StockStatisticService;
 import com.bassoon.stockanalyzer.statistic.StockValue;
@@ -25,6 +23,9 @@ public class AnalyzerController {
 
     @Autowired
     private StockStatisticService stockStatisticService;
+
+    @Autowired
+    private StockFilter stockFilter;
 
 
     @RequestMapping(value = "/stocklist", method = RequestMethod.GET)
@@ -86,4 +87,11 @@ public class AnalyzerController {
 //        rsp.addHeader("X-Total-Count", String.valueOf(nodeList.size()));
 //        return nodeList;
 //    }
+
+    @GetMapping(value = "/stock-selector/{year}", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public List<StockNode> getSelectorStockList(HttpServletResponse rsp, @PathVariable int year) {
+        List<StockNode> nodeList = stockFilter.stockEvalution(year);
+        return nodeList;
+    }
 }

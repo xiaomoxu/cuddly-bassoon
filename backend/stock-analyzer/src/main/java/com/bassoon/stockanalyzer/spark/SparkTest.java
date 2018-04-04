@@ -1,5 +1,7 @@
 package com.bassoon.stockanalyzer.spark;
 
+import com.bassoon.stockanalyzer.policy.RoeValue;
+import com.bassoon.stockanalyzer.policy.StockNode;
 import com.bassoon.stockanalyzer.policy.TwoEightNode;
 import com.bassoon.stockanalyzer.policy.TwoEightRotation;
 import com.bassoon.stockanalyzer.utils.DateUtils;
@@ -7,7 +9,9 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FilterFunction;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.api.java.function.ReduceFunction;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
 import org.apache.spark.sql.catalyst.encoders.RowEncoder;
@@ -32,7 +36,9 @@ public class SparkTest implements Serializable {
 
     public SparkTest() {
         System.setProperty("hadoop.home.dir", "C:\\home\\xxu\\github\\hadoop-common-2.2.0-bin\\");
-        SparkConf sparkConf = new SparkConf().setAppName("myapp").set("spark.cores.max", "4").setMaster("spark://10.20.116.107:7077");
+        SparkConf sparkConf = new SparkConf().setAppName("myapp").set("spark.cores.max", "4").setMaster("spark://10.20.116.107:7077").
+                setJars(new String[]{"C:\\home\\xxu\\github\\cuddly-bassoon\\backend\\stock-analyzer\\target\\stock-analyzer-0.0.1-SNAPSHOT.jar.original"});
+        ;
         SparkContext sc = new SparkContext(sparkConf);
         sparkSession = SparkSession.builder().config(sc.getConf()).getOrCreate();
     }
@@ -116,10 +122,57 @@ public class SparkTest implements Serializable {
         return _ds.collectAsList();
     }
 
+    public List<StockNode> stockEvalution(int year) {
+        Dataset<Row> dataset = this.getDatasetByTable("stock_basics");
+        dataset.createOrReplaceTempView("stock_basics_temp_view");
+        dataset = dataset.sqlContext().sql("select code , name from stock_basics_temp_view");
+        dataset = dataset.persist(StorageLevel.MEMORY_AND_DISK());
+        Dataset<StockNode> ds = dataset.map(new MapFunction<Row, StockNode>() {
+            @Override
+            public StockNode call(Row row) throws Exception {
+                String code = (String) row.getAs("code");
+                String name = (String) row.getAs("name");
+                StockNode node = new StockNode();
+                if (code != null || !code.equals("")) {
+                    node.setCode(code);
+                    node.setName(name);
+                }
+                return node;
+            }
+        }, Encoders.bean(StockNode.class));
+        List<StockNode> nodes = ds.collectAsList();
+        for (StockNode node : nodes) {
+            scoringROE(node, year);
+        }
+        return nodes;
+    }
+
+    public StockNode scoringROE(StockNode node, int year) {
+        Dataset<Row> stock_profit_dataset = this.getDatasetByTable("stock_profit_data");
+        stock_profit_dataset.createOrReplaceTempView("stock_profit_data_temp_view");
+        //计算ROE
+        //条件 ROE>0 , ROE(YEAR) > ROE(LAST YEAR)
+        //ROE_TOTAL = 4季度ROE总和
+        System.out.println("select roe from stock_profit_data_temp_view where code=\" + node.getCode() + \" and year=\" + year");
+        Dataset<Double> roe_dataset = stock_profit_dataset.sqlContext().
+                sql("select roe from stock_profit_data_temp_view where code=" + node.getCode() + " and year=" + year).as(Encoders.DOUBLE());
+        System.out.println("kkkkkkk" + roe_dataset.collectAsList().size());
+        Double doubleValue = roe_dataset.reduce(new ReduceFunction<Double>() {
+            @Override
+            public Double call(Double aDouble, Double t1) throws Exception {
+                return aDouble + t1;
+            }
+        });
+        if (doubleValue > 0) {
+            node.setScore(1);
+        }
+        return node;
+    }
 
     public static void main(String argz[]) {
         SparkTest test = new SparkTest();
-        System.out.println("-------" + test.generateTwoEightRatationData());
+//        System.out.println("-------" + test.generateTwoEightRatationData());
+        test.stockEvalution(2017);
 
     }
 }
