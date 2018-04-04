@@ -7,6 +7,8 @@ from sqlalchemy.orm import sessionmaker
 
 #api_name:table_name
 mapTable = {
+    #API report_data(),Q1 less col(profits_yoy),must generate Q2 first for creating table
+    'get_report_data':'stock_report_data',
     'get_profit_data':'stock_profit_data',
     'get_operation_data':'stock_operation_data',
     'get_growth_data':'stock_growth_data',
@@ -79,10 +81,12 @@ def retrieveData(api_name,table_name,quarters):
                         continue
                 report['year'] = p.Series(year_cur,index=report.index)
                 report['quarter'] = p.Series(quarter_cur,index=report.index)
-                print(report)
+                #print(report)
                 report.to_sql(table_name, engine, if_exists='append')
             except IOError:
-                print('\nIOError: might no data on server')
+                print('\n--------IOError: might no data on server-----------')
+            except:
+                print('\n--------Import data to MySQL error------------')
 
 def getTableObject(name):
     metadata = MetaData()
