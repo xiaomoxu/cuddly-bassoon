@@ -113,4 +113,12 @@ public class AnalyzerController {
         rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
         return indexList;
     }
+
+    @GetMapping(value = "/stock-news", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public List<StockNewsValue> getStockNews(HttpServletResponse rsp) {
+        List<StockNewsValue> indexList = stockSparkService.getStockNews();
+        rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
+        return indexList;
+    }
 }

@@ -3,10 +3,7 @@ package com.bassoon.stockanalyzer.spark.service;
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.service.JsonUtils;
 import com.bassoon.stockanalyzer.spark.config.SparkRepository;
-import com.bassoon.stockanalyzer.spark.model.BasicStockValue;
-import com.bassoon.stockanalyzer.spark.model.StockIndexValue;
-import com.bassoon.stockanalyzer.spark.model.StockListWrapper;
-import com.bassoon.stockanalyzer.spark.model.StockScoreValue;
+import com.bassoon.stockanalyzer.spark.model.*;
 import org.apache.spark.api.java.function.FilterFunction;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
@@ -22,7 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Service
-public class StockSparkService implements Serializable{
+public class StockSparkService implements Serializable {
     @Autowired
     private SparkRepository sparkRepository;
 
@@ -102,6 +99,14 @@ public class StockSparkService implements Serializable{
             }
         });
         List<StockIndexValue> indexList = dataset.collectAsList();
+        sparkRepository.stopAndClose();
+        return indexList;
+    }
+
+    public List<StockNewsValue> getStockNews() {
+        Dataset<StockNewsValue> dataset = sparkRepository.getDatasetByTable("stock_news").
+                as(Encoders.bean(StockNewsValue.class)).as(Encoders.bean(StockNewsValue.class));
+        List<StockNewsValue> indexList = dataset.collectAsList();
         sparkRepository.stopAndClose();
         return indexList;
     }
