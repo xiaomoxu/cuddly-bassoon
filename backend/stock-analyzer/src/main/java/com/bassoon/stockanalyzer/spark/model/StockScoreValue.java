@@ -6,6 +6,7 @@ public class StockScoreValue implements Serializable {
     private String code;
     private String name;
     private int score = 0;
+    private FilterCondition filterCondition;//筛选条件，在前端也列出来各个指标
 
     public String getCode() {
         return code;
@@ -29,5 +30,13 @@ public class StockScoreValue implements Serializable {
 
     public void setScore(int score) {
         this.score = this.score + score;
+    }
+
+    public FilterCondition getFilterCondition() {
+        return filterCondition;
+    }
+
+    public void setFilterCondition(FilterCondition filterCondition) {
+        this.filterCondition = filterCondition;
     }
 }

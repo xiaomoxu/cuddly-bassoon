@@ -4,7 +4,7 @@ import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.model.PageResult;
 import com.bassoon.stockanalyzer.service.StockService;
 import com.bassoon.stockanalyzer.spark.model.*;
-import com.bassoon.stockanalyzer.spark.service.StockScore;
+import com.bassoon.stockanalyzer.spark.service.ScorePolicyService;
 import com.bassoon.stockanalyzer.spark.service.StockSparkService;
 import com.bassoon.stockanalyzer.spark.service.StockStatisticService;
 import com.bassoon.stockanalyzer.spark.service.AlternatePolicyService;
@@ -26,7 +26,7 @@ public class AnalyzerController {
     private StockStatisticService stockStatisticService;
 
     @Autowired
-    private StockScore stockScore;
+    private ScorePolicyService scorePolicyService;
 
     @Autowired
     private StockSparkService stockSparkService;
@@ -98,10 +98,19 @@ public class AnalyzerController {
         return nodeList;
     }
 
-    @GetMapping(value = "/stock-selector/{year}", produces = "application/json;charset=UTF-8")
+//    @GetMapping(value = "/stock-selector/{year}", produces = "application/json;charset=UTF-8")
+//    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+//    public List<StockScoreValue> getSelectorStockList(HttpServletResponse rsp, @PathVariable int year) {
+//        List<StockScoreValue> nodeList = scorePolicyService.scoring(year);
+//        return nodeList;
+//    }
+
+    @GetMapping(value = "/stock-index/{code}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
-    public List<StockScoreValue> getSelectorStockList(HttpServletResponse rsp, @PathVariable int year) {
-        List<StockScoreValue> nodeList = stockScore.scoring(year);
-        return nodeList;
+    public List<StockIndexValue> getStockIndexByCodeToday(HttpServletResponse rsp, @PathVariable String code) {
+        String[] codeArray = code.split(",");
+        List<StockIndexValue> indexList = stockSparkService.getStockIndexValueToday(codeArray);
+        rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
+        return indexList;
     }
 }

@@ -36,7 +36,7 @@ public class SparkRepository implements Serializable {
     @Value("${jar.file.path}")
     private String jarFile;
 
-    private SparkContext sparkContext = null;
+    private transient SparkContext sparkContext = null;
 
     public Dataset<Row> getDatasetByTable(String tableName) {
         Dataset<Row> jdbcDF = sparkSession().read()
