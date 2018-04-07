@@ -1,16 +1,16 @@
-package com.bassoon.stockanalyzer.policy;
+package com.bassoon.stockanalyzer.spark.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
-public class TwoEightNode2 implements Serializable {
+public class AlternateValue2 implements Serializable {
     private String date;
     private double close;
     private double money = 5000;
 
     @JsonIgnore
-    private TwoEightNode2 previousNode2;
+    private AlternateValue2 previousNode2;
 
     public String getDate() {
         return date;
@@ -43,7 +43,7 @@ public class TwoEightNode2 implements Serializable {
         }
     }
 
-    public void setPreviousNode(TwoEightNode2 previousNode) {
+    public void setPreviousNode(AlternateValue2 previousNode) {
         this.previousNode2 = previousNode;
     }
 }

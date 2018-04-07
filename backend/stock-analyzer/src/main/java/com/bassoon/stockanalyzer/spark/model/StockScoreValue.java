@@ -1,8 +1,8 @@
-package com.bassoon.stockanalyzer.policy;
+package com.bassoon.stockanalyzer.spark.model;
 
 import java.io.Serializable;
 
-public class StockNode implements Serializable {
+public class StockScoreValue implements Serializable {
     private String code;
     private String name;
     private int score = 0;

@@ -4,6 +4,7 @@ import com.bassoon.stockanalyzer.domain.Market;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
+@Deprecated
 @Mapper
 public interface MarketMapper {
 

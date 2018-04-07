@@ -1,8 +1,8 @@
-package com.bassoon.stockanalyzer.statistic;
+package com.bassoon.stockanalyzer.spark.model;
 
 import java.io.Serializable;
 
-public class StockValue implements Serializable {
+public class StockStatisticsValue implements Serializable {
     private String key;//城市名称
     private long count;//城市下有股票的数量
 

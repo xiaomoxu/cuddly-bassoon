@@ -1,28 +1,16 @@
-package com.bassoon.stockanalyzer.spark;
+package com.bassoon.stockanalyzer.spark.test;
 
-import com.bassoon.stockanalyzer.policy.RoeValue;
-import com.bassoon.stockanalyzer.policy.StockNode;
-import com.bassoon.stockanalyzer.policy.TwoEightNode;
-import com.bassoon.stockanalyzer.policy.TwoEightRotation;
+import com.bassoon.stockanalyzer.spark.model.AlternateValue;
+import com.bassoon.stockanalyzer.spark.model.StockScoreValue;
+import com.bassoon.stockanalyzer.spark.service.AlternatePolicyService;
 import com.bassoon.stockanalyzer.utils.DateUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.FilterFunction;
-import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.ReduceFunction;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
-import org.apache.spark.sql.catalyst.encoders.RowEncoder;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructType;
 import org.apache.spark.storage.StorageLevel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import scala.Function1;
-import scala.Tuple2;
-import scala.reflect.ClassTag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,19 +42,19 @@ public class SparkTest implements Serializable {
         return jdbcDF;
     }
 
-//    private Dataset<TwoEightNode> getWeekData(String table) {
+//    private Dataset<AlternateValue> getWeekData(String table) {
 //        Dataset<Row> dataset = this.getDatasetByTable(table);
 //        dataset.createOrReplaceTempView(table);
 //        dataset = dataset.sqlContext().sql("select * from " + table + " where date >= '2007-01-19'");
-//        Encoder<TwoEightNode> twoEightNodeEncoder = Encoders.bean(TwoEightNode.class);
-//        Dataset<TwoEightNode> ds = dataset.map(new MapFunction<Row, TwoEightNode>() {
-//            TwoEightNode previousNode = new TwoEightNode();
-//            TwoEightNode myself = null;
+//        Encoder<AlternateValue> twoEightNodeEncoder = Encoders.bean(AlternateValue.class);
+//        Dataset<AlternateValue> ds = dataset.map(new MapFunction<Row, AlternateValue>() {
+//            AlternateValue previousNode = new AlternateValue();
+//            AlternateValue myself = null;
 //
 //            @Override
-//            public TwoEightNode call(Row row) throws Exception {
+//            public AlternateValue call(Row row) throws Exception {
 //                String date = (String) row.getAs("date");
-//                myself = new TwoEightNode();
+//                myself = new AlternateValue();
 //                if (DateUtils.dateToWeek(date) == 5) {
 //                    Double close = (Double) row.getAs("close");
 //                    myself.setDate(date);
@@ -84,14 +72,14 @@ public class SparkTest implements Serializable {
 //        return ds;
 //    }
 
-    public List<TwoEightNode> comparedTwoAndEight(JavaRDD<TwoEightNode> hsJavaRDD, JavaRDD<TwoEightRotation> zzJavaRDD) {
+    public List<AlternateValue> comparedTwoAndEight(JavaRDD<AlternateValue> hsJavaRDD, JavaRDD<AlternatePolicyService> zzJavaRDD) {
         return null;
 
     }
 
     //stock_zz_k_data
     //stock_hs_k_data
-    public List<TwoEightNode> generateTwoEightRatationData() {
+    public List<AlternateValue> generateTwoEightRatationData() {
         String[] tables = new String[]{"stock_zz_k_data", "stock_hs_k_data"};
         List<Dataset<Row>> dss = new ArrayList<Dataset<Row>>();
         for (String table : tables) {
@@ -104,10 +92,10 @@ public class SparkTest implements Serializable {
         Column[] columns_1 = new Column[]{dss.get(1).col("close").as("hsclose"), dss.get(1).col("date")};
         Dataset<Row> ds = dss.get(0).select(columns_0).join(dss.get(1).select(columns_1), "date");
         ds = ds.sort("date");
-        Dataset<TwoEightNode> _ds = ds.map(new MapFunction<Row, TwoEightNode>() {
+        Dataset<AlternateValue> _ds = ds.map(new MapFunction<Row, AlternateValue>() {
             @Override
-            public TwoEightNode call(Row row) throws Exception {
-                TwoEightNode node = new TwoEightNode();
+            public AlternateValue call(Row row) throws Exception {
+                AlternateValue node = new AlternateValue();
                 String date = (String) row.getAs("date");
                 if (DateUtils.dateToWeek(date) == 5) {
                     Double zzclose = (Double) row.getAs("zzclose");
@@ -118,36 +106,36 @@ public class SparkTest implements Serializable {
                 }
                 return node;
             }
-        }, Encoders.bean(TwoEightNode.class));
+        }, Encoders.bean(AlternateValue.class));
         return _ds.collectAsList();
     }
 
-    public List<StockNode> stockEvalution(int year) {
+    public List<StockScoreValue> stockEvalution(int year) {
         Dataset<Row> dataset = this.getDatasetByTable("stock_basics");
         dataset.createOrReplaceTempView("stock_basics_temp_view");
         dataset = dataset.sqlContext().sql("select code , name from stock_basics_temp_view");
         dataset = dataset.persist(StorageLevel.MEMORY_AND_DISK());
-        Dataset<StockNode> ds = dataset.map(new MapFunction<Row, StockNode>() {
+        Dataset<StockScoreValue> ds = dataset.map(new MapFunction<Row, StockScoreValue>() {
             @Override
-            public StockNode call(Row row) throws Exception {
+            public StockScoreValue call(Row row) throws Exception {
                 String code = (String) row.getAs("code");
                 String name = (String) row.getAs("name");
-                StockNode node = new StockNode();
+                StockScoreValue node = new StockScoreValue();
                 if (code != null || !code.equals("")) {
                     node.setCode(code);
                     node.setName(name);
                 }
                 return node;
             }
-        }, Encoders.bean(StockNode.class));
-        List<StockNode> nodes = ds.collectAsList();
-        for (StockNode node : nodes) {
+        }, Encoders.bean(StockScoreValue.class));
+        List<StockScoreValue> nodes = ds.collectAsList();
+        for (StockScoreValue node : nodes) {
             scoringROE(node, year);
         }
         return nodes;
     }
 
-    public StockNode scoringROE(StockNode node, int year) {
+    public StockScoreValue scoringROE(StockScoreValue node, int year) {
         Dataset<Row> stock_profit_dataset = this.getDatasetByTable("stock_profit_data");
         stock_profit_dataset.createOrReplaceTempView("stock_profit_data_temp_view");
         //计算ROE

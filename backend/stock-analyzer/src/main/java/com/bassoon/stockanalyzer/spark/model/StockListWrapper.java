@@ -1,4 +1,4 @@
-package com.bassoon.stockanalyzer.wrapper;
+package com.bassoon.stockanalyzer.spark.model;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.fasterxml.jackson.annotation.JsonProperty;

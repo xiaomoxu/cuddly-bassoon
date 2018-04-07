@@ -3,6 +3,7 @@ package com.bassoon.stockanalyzer.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+@Deprecated
 public class StockHistory implements Serializable {
     private String stockCode;
     private Date date; //：日期

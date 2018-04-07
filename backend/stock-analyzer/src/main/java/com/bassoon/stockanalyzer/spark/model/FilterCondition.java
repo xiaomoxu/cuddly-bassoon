@@ -1,4 +1,4 @@
-package com.bassoon.stockanalyzer.policy;
+package com.bassoon.stockanalyzer.spark.model;
 
 public class FilterCondition {
     private double roe;//净资产收益率 来源于 stock_profit_data  roe > 0  按照4个季度总和计算

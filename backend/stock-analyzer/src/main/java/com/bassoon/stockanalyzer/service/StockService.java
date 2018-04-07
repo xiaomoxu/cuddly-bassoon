@@ -3,12 +3,9 @@ package com.bassoon.stockanalyzer.service;
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.mapper.StockMapper;
 import com.bassoon.stockanalyzer.model.PageResult;
-import com.bassoon.stockanalyzer.spark.SparkRepository;
-import com.bassoon.stockanalyzer.wrapper.StockListWrapper;
+import com.bassoon.stockanalyzer.spark.model.StockListWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -16,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,8 +27,6 @@ public class StockService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private SparkRepository sparkRepository;
 
     /**
      * 获取所有股票数据，并保存在redis中
@@ -128,47 +121,4 @@ public class StockService {
         return stockPageResult;
     }
 
-    public StockListWrapper getAllStockOnSpark() {
-        Dataset<Row> dataset = sparkRepository.getDatasetByTable("stock");
-        dataset.persist();
-        List<Row> rows = dataset.collectAsList();
-        List<Stock> stockList = new ArrayList<Stock>();
-        for (Row row : rows) {
-            Stock stock = new Stock();
-            int id = (Integer) row.getAs("id");
-            String code = (String) row.getAs("code");
-            String name = (String) row.getAs("name");
-            String market = (String) row.getAs("market");
-            String region = (String) row.getAs("region");
-            String belongTo = (String) row.getAs("belong_to");
-            BigDecimal weight = (BigDecimal) row.getAs("weight");
-            BigDecimal currentPrice = (BigDecimal) row.getAs("current_price");
-            BigDecimal eps = (BigDecimal) row.getAs("eps");
-            BigDecimal bvps = (BigDecimal) row.getAs("bvps");
-            BigDecimal roe = (BigDecimal) row.getAs("roe");
-            BigDecimal totalStock = (BigDecimal) row.getAs("total_stock");
-            BigDecimal liqui = (BigDecimal) row.getAs("liqui");
-            BigDecimal ltsz = (BigDecimal) row.getAs("ltsz");
-            String information_url = (String) row.getAs("information_url");
-            stock.setId((long) id);
-            stock.setCode(code);
-            stock.setName(name);
-            stock.setMarket(market);
-            stock.setRegion(region);
-            stock.setBelongTo(belongTo);
-            stock.setWeight(weight.doubleValue());
-            stock.setCurrentPrice(currentPrice.doubleValue());
-            stock.setEps(eps.doubleValue());
-            stock.setBvps(bvps.doubleValue());
-            stock.setRoe(roe.doubleValue());
-            stock.setTotalStock(totalStock.doubleValue());
-            stock.setLiqui(liqui.doubleValue());
-            stock.setLtsz(ltsz.doubleValue());
-            stock.setInformation_url(information_url);
-            stockList.add(stock);
-        }
-        StockListWrapper stocks = new StockListWrapper();
-        stocks.setStockList(stockList);
-        return stocks;
-    }
 }

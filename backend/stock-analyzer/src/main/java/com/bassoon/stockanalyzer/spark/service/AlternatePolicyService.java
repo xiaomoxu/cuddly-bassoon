@@ -1,7 +1,9 @@
-package com.bassoon.stockanalyzer.policy;
+package com.bassoon.stockanalyzer.spark.service;
 
 import com.bassoon.stockanalyzer.service.JsonUtils;
-import com.bassoon.stockanalyzer.spark.SparkRepository;
+import com.bassoon.stockanalyzer.spark.config.SparkRepository;
+import com.bassoon.stockanalyzer.spark.model.AlternateValue;
+import com.bassoon.stockanalyzer.spark.model.AlternateValue2;
 import com.bassoon.stockanalyzer.utils.DateUtils;
 import org.apache.spark.api.java.function.FilterFunction;
 import org.apache.spark.api.java.function.MapFunction;
@@ -17,27 +19,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class TwoEightRotation implements Serializable {
+public class AlternatePolicyService implements Serializable {
     @Autowired
     private SparkRepository sparkRepository;
 
     //stock_zz_k_data
     //stock_hs_k_data
 
-    public List<TwoEightNode2> getWeekData(String table) {
+    public List<AlternateValue2> getWeekData(String table) {
         Dataset<Row> dataset = sparkRepository.getDatasetByTable(table);
         dataset.createOrReplaceTempView(table);
         dataset = dataset.sqlContext().sql("select * from " + table + " where date >= '2007-01-19'");
         dataset = dataset.persist(StorageLevel.MEMORY_AND_DISK());
-        Dataset<TwoEightNode2> ds = dataset.map(new MapFunction<Row, TwoEightNode2>() {
-            TwoEightNode2 previousNode = null;
+        Dataset<AlternateValue2> ds = dataset.map(new MapFunction<Row, AlternateValue2>() {
+            AlternateValue2 previousNode = null;
 
             @Override
-            public TwoEightNode2 call(Row row) throws Exception {
+            public AlternateValue2 call(Row row) throws Exception {
                 String date = (String) row.getAs("date");
                 if (DateUtils.dateToWeek(date) == 5) {
                     Double close = (Double) row.getAs("close");
-                    TwoEightNode2 myself = new TwoEightNode2();
+                    AlternateValue2 myself = new AlternateValue2();
                     myself.setClose(close);
                     myself.setDate(date);
                     myself.setPreviousNode(previousNode);
@@ -47,10 +49,10 @@ public class TwoEightRotation implements Serializable {
                 }
                 return null;
             }
-        }, Encoders.bean(TwoEightNode2.class));
-        ds = ds.filter(new FilterFunction<TwoEightNode2>() {
+        }, Encoders.bean(AlternateValue2.class));
+        ds = ds.filter(new FilterFunction<AlternateValue2>() {
             @Override
-            public boolean call(TwoEightNode2 twoEightNode) throws Exception {
+            public boolean call(AlternateValue2 twoEightNode) throws Exception {
                 if (twoEightNode != null) {
                     return true;
                 }
@@ -73,14 +75,14 @@ public class TwoEightRotation implements Serializable {
     @Value("${spring.redisport}")
     private int port;
 
-    public List<TwoEightNode> generateTwoEightRatationData(boolean reload) {
+    public List<AlternateValue> generateAlternatePolicyData(boolean reload) {
         Jedis jedis = new Jedis(host, port);
         if (!reload) {
             //先从缓存取
-//            List<TwoEightNode> result = (List<TwoEightNode>) this.sparkJedisRepository.get("tow_eight", List.class, TwoEightNode.class);
+//            List<AlternateValue> result = (List<AlternateValue>) this.sparkJedisRepository.get("tow_eight", List.class, AlternateValue.class);
             String json = jedis.get("two_eight");
             if(json != null && !json.equals("")){
-                List<TwoEightNode> result = JsonUtils.jsonToObject(json, List.class, TwoEightNode.class);
+                List<AlternateValue> result = JsonUtils.jsonToObject(json, List.class, AlternateValue.class);
                 if (result != null) {
                     return result;
                 }
@@ -99,13 +101,13 @@ public class TwoEightRotation implements Serializable {
         Dataset<Row> ds = dss.get(0).select(columns_0).join(dss.get(1).select(columns_1), "date");
         ds = ds.sort("date");
         ds = ds.persist(StorageLevel.MEMORY_AND_DISK());
-        Dataset<TwoEightNode> _ds = ds.map(new MapFunction<Row, TwoEightNode>() {
+        Dataset<AlternateValue> _ds = ds.map(new MapFunction<Row, AlternateValue>() {
 
             @Override
-            public TwoEightNode call(Row row) throws Exception {
+            public AlternateValue call(Row row) throws Exception {
                 String date = (String) row.getAs("date");
                 if (DateUtils.dateToWeek(date) == 5) {
-                    TwoEightNode node = new TwoEightNode();
+                    AlternateValue node = new AlternateValue();
                     Double zzclose = (Double) row.getAs("zzclose");
                     Double hsclose = (Double) row.getAs("hsclose");
                     node.setDate(date);
@@ -115,21 +117,21 @@ public class TwoEightRotation implements Serializable {
                 }
                 return null;
             }
-        }, Encoders.bean(TwoEightNode.class));
-        _ds = _ds.filter(new FilterFunction<TwoEightNode>() {
+        }, Encoders.bean(AlternateValue.class));
+        _ds = _ds.filter(new FilterFunction<AlternateValue>() {
             @Override
-            public boolean call(TwoEightNode twoEightNode) throws Exception {
-                if (twoEightNode != null) {
+            public boolean call(AlternateValue alternateValue) throws Exception {
+                if (alternateValue != null) {
                     return true;
                 }
                 return false;
             }
         });
-        List<TwoEightNode> nodes = _ds.collectAsList();
+        List<AlternateValue> nodes = _ds.collectAsList();
         int nodesSize = nodes.size();
-        TwoEightNode previousNode = null;
-        TwoEightNode currentNode = null;
-        TwoEightNode compareNode = null;
+        AlternateValue previousNode = null;
+        AlternateValue currentNode = null;
+        AlternateValue compareNode = null;
         for (int i = 0; i < nodesSize; i++) {
             //计算basic收益
             currentNode = nodes.get(i);

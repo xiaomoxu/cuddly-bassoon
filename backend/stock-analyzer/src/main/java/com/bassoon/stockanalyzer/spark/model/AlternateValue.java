@@ -1,10 +1,10 @@
-package com.bassoon.stockanalyzer.policy;
+package com.bassoon.stockanalyzer.spark.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
-public class TwoEightNode implements Serializable {
+public class AlternateValue implements Serializable {
     private String date;
     private double zzclose;
     private double hsclose;
@@ -16,7 +16,7 @@ public class TwoEightNode implements Serializable {
     private int hold2 = -1;//HS=0 ZZ=1 空仓=-1
 
     @JsonIgnore
-    private TwoEightNode previousNode = null;
+    private AlternateValue previousNode = null;
 
     public String getDate() {
         return date;
@@ -68,7 +68,7 @@ public class TwoEightNode implements Serializable {
     }
 
     //计算空仓市值
-    public void calculateAdvancedMoney2(TwoEightNode compareNode) {
+    public void calculateAdvancedMoney2(AlternateValue compareNode) {
         //从第一个时间周期开始计算
         double zz_change = (double) ((this.getZzclose() - compareNode.getZzclose()) / compareNode.getZzclose());
         double hs_change = (double) ((this.getHsclose() - compareNode.getHsclose()) / compareNode.getHsclose());
@@ -115,7 +115,7 @@ public class TwoEightNode implements Serializable {
         }
     }
 
-    public void calculateAdvancedMoney(TwoEightNode compareNode) {
+    public void calculateAdvancedMoney(AlternateValue compareNode) {
         //从第一个时间周期开始计算
         double zz_change = (double) ((this.getZzclose() - compareNode.getZzclose()) / compareNode.getZzclose());
         double hs_change = (double) ((this.getHsclose() - compareNode.getHsclose()) / compareNode.getHsclose());
@@ -153,7 +153,7 @@ public class TwoEightNode implements Serializable {
         }
     }
 
-    public void setPreviousNode(TwoEightNode previousNode) {
+    public void setPreviousNode(AlternateValue previousNode) {
         this.previousNode = previousNode;
     }
 
