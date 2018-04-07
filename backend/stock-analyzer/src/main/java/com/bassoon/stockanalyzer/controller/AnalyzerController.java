@@ -109,7 +109,7 @@ public class AnalyzerController {
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
     public List<StockIndexValue> getStockIndexByCodeToday(HttpServletResponse rsp, @PathVariable String code) {
         String[] codeArray = code.split(",");
-        List<StockIndexValue> indexList = stockSparkService.getStockIndexValueToday(codeArray);
+        List<StockIndexValue> indexList = stockSparkService.getStockIndexValueToday(false, codeArray);
         rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
         return indexList;
     }
@@ -117,7 +117,7 @@ public class AnalyzerController {
     @GetMapping(value = "/stock-news", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
     public List<StockNewsValue> getStockNews(HttpServletResponse rsp) {
-        List<StockNewsValue> indexList = stockSparkService.getStockNews();
+        List<StockNewsValue> indexList = stockSparkService.getStockNews(false);
         rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
         return indexList;
     }
