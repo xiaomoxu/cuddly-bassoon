@@ -85,7 +85,18 @@ public class StockSparkService implements Serializable {
         return _ds;
     }
 
-    public List<StockIndexValue> getStockIndexValueToday(String... codes) {
+    public List<StockIndexValue> getStockIndexValueToday(boolean reload, String... codes) {
+        Jedis jedis = new Jedis(host, port);
+        if (!reload) {
+            //先从缓存取
+            String json = jedis.get("stock_index");
+            if (json != null && !json.equals("")) {
+                List<StockIndexValue> result = JsonUtils.jsonToObject(json, List.class, StockIndexValue.class);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
         Dataset<StockIndexValue> dataset = sparkRepository.getDatasetByTable("stock_index").as(Encoders.bean(StockIndexValue.class));
         dataset = dataset.filter(new FilterFunction<StockIndexValue>() {
             @Override
@@ -99,14 +110,27 @@ public class StockSparkService implements Serializable {
             }
         });
         List<StockIndexValue> indexList = dataset.collectAsList();
+        jedis.set("stock_index", JsonUtils.objectToJson(indexList));
         sparkRepository.stopAndClose();
         return indexList;
     }
 
-    public List<StockNewsValue> getStockNews() {
+    public List<StockNewsValue> getStockNews(boolean reload) {
+        Jedis jedis = new Jedis(host, port);
+        if (!reload) {
+            //先从缓存取
+            String json = jedis.get("stock_news");
+            if (json != null && !json.equals("")) {
+                List<StockNewsValue> result = JsonUtils.jsonToObject(json, List.class, StockNewsValue.class);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
         Dataset<StockNewsValue> dataset = sparkRepository.getDatasetByTable("stock_news").
                 as(Encoders.bean(StockNewsValue.class)).as(Encoders.bean(StockNewsValue.class));
         List<StockNewsValue> indexList = dataset.collectAsList();
+        jedis.set("stock_news", JsonUtils.objectToJson(indexList));
         sparkRepository.stopAndClose();
         return indexList;
     }
