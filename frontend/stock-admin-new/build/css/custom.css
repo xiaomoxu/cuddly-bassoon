@@ -260,6 +260,16 @@ html , body{
     width: 35%;
     float: left
 }
+.wplocalimg {
+    margin-left: 10px;    
+    /*
+    transform:scale(0.5);
+    -ms-transform:scale(0.5);
+    -webkit-transform:scale(0.5);
+    -o-transform:scale(0.5);
+    -moz-transform:scale(0.5);
+    */
+}
 .img-circle.profile_img {
     width: 70%;
     background: #fff;

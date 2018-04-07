@@ -193,16 +193,58 @@ function init_DataTables() {
     }();
 
 
-    //$('#datatable').dataTable();
-    //add by wp
+    var getUrl = window.location.href;
+    var curUrl= getUrl.substring(getUrl.lastIndexOf("\_")+1,getUrl.lastIndexOf("\."));
+    console.log(curUrl)
+    var tablesDataf =[];
+    
+    
     $('#datatable').dataTable({
+        
         "ajax": {
             "type": "GET",
             "url": "http://10.20.118.28:9002/stocklist-spark",
             //"url": "table.json",
             "dataType": "json",
-            "contentType": "application/x-www-form-urlencoded; charset=UTF-8"
+            "contentType": "application/x-www-form-urlencoded; charset=UTF-8",
+            "dataSrc": function (dataresult) {
+                
+                switch(parseInt(curUrl.replace(/[^0-9]/ig,"")))
+                {
+                    case 300:
+                    console.log("--->300");                        
+                    for (var i=0, ien=dataresult.aaData.length; i<ien ; i++ ) {                         
+                       var flag1 = parseInt((dataresult.aaData[i].belong_to).replace(/[^0-9]/ig,""));//300
+                       if (flag1 ==300){
+                        tablesDataf.push(dataresult.aaData[i]);
+                       }
+                    }
+                        break;
+                    case 50:
+                    console.log("--->50");
+                    for (var i=0, ien=dataresult.aaData.length; i<ien ; i++ ) {                         
+                       var flag1 = parseInt((dataresult.aaData[i].belong_to).replace(/[^0-9]/ig,""));//300
+                       if (flag1 ==50){
+                        tablesDataf.push(dataresult.aaData[i]);
+                       }
+                    }
+                        break;
+                    default://500
+                    console.log("--->500");
+                   for (var i=0, ien=dataresult.aaData.length; i<ien ; i++ ) {                         
+                       var flag1 = parseInt((dataresult.aaData[i].belong_to).replace(/[^0-9]/ig,""));//300
+                       if (flag1 ==500){
+                        tablesDataf.push(dataresult.aaData[i]);
+                       }
+                    }
+
+                }
+                
+            return tablesDataf;
+            
+            } 
         },
+    
         "columns": [
 
             {
@@ -223,15 +265,15 @@ function init_DataTables() {
             },
             {
                 "title": "Block",
-                "data": "belongTo"
+                "data": "belong_to"
             },
             {
                 "title": "Weight",
                 "data": "weight"
             },
             {
-                "title": "latest price",
-                "data": "currentPrice"
+                "title": "CurrentPrice",
+                "data": "current_price"
             },
             {
                 "title": "EPS",
@@ -247,7 +289,7 @@ function init_DataTables() {
             },
             {
                 "title": "TotalStock",
-                "data": "totalStock"
+                "data": "total_stock"
             },
             {
                 "title": "LIQUI",
@@ -257,29 +299,27 @@ function init_DataTables() {
                 "title": "LTSZ",
                 "data": "ltsz"
             },
-            //{"title":"详细地址", "data": "ltsz"}
             ],
-/*
         "columnDefs": [
             {
                 "render": function (data, type, row) {
                     //data为当前列的数据
                     //type为当前列数据类型
                     //row为当前行数据
+                    var toCode
                     var rowData = JSON.stringify(row);
-                    var str = "<a class='herf='javascript:void(0)' onclick='changeModal(" + rowData + ")'>联系人</a>";
+                    (row.code).length < 7? toCode=(parseInt(row.code)/Math.pow(10,6)).toFixed(6).substr(2):toCode=row.code;
+                    var str = "<a herf='"+row.information_url+"'>"+toCode+"</a>";
                     return str;
-                    //此处return可自己定义，博主此处举例为超链接，传参须注意，若传字符串需加上转义字符，否则会报错ReferenceError: XXX is not defined at HTMLAnchorElement.onclick
                 },
                 //此处target负数表示从右向左的顺序
                 //-1为右侧第一列 
-                "targets": -1
-                   }
+                "targets": 0
+              }
                   ],
         "createdRow": function (row, data, index) {
             ////创建行之后的操作
         },
-        */
     });
     //add by wp 
 
