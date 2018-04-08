@@ -142,21 +142,21 @@ function init_sidebar() {
 };
 // /Sidebar
 
-function init_echartindustry() {
+function init_echartconcept() {
 
     if (typeof (echarts) === 'undefined') {
         return;
     }
 
-    var echart_indus = echarts.init(document.getElementById('echart_indus'))
+    var echart_indus = echarts.init(document.getElementById('echart_concept'))
     
-    var seriesDatapie1=[],legendDatapie1=[],tempobj={}
+    var seriesDatapie1=[],legendDatapie1=[],tempobj={},legendDatapiexx=[]
     
     $.when(
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-static/industry",
+            url: "http://10.20.118.28:9002/stock-static/concept",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -181,12 +181,15 @@ function init_echartindustry() {
                         }
                     }
                 seriesDatapie1 = seriesDatapie1.sort(compare('value')).reverse() //ordered                   
-                for (var k = 0; k < seriesDatapie1.length; k++) {
+                for (var k = 0; k < 15; k++) {
                      legendDatapie1.push(seriesDatapie1[k].name)
-                     k<= 17 ? tempobj[seriesDatapie1[k].name]=true:tempobj[seriesDatapie1[k].name]=false
+                     legendDatapiexx.push(seriesDatapie1[k].value)
+                     //k<= 17 ? tempobj[seriesDatapie1[k].name]=true:tempobj[seriesDatapie1[k].name]=false
                     }
+                    
+                legendDatapie1=legendDatapie1.sort(compare('value')).reverse();
+                legendDatapiexx=legendDatapiexx.sort(compare('value')).reverse();
                 }
-                console.log("@@")
                 console.log(tempobj);
             },
             error: function (errorMsg) {
@@ -198,44 +201,64 @@ function init_echartindustry() {
         console.log("done");
             
         echart_indus.setOption({
-            
-            title : {
-                    text: '',
-                    subtext: '',
-                    x:'center'
-                },
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    type: 'scroll',
-                    orient: 'vertical',
-                    right: 10,
-                    top: 30,
-                    bottom: 10,
-                    data: legendDatapie1,
-                    selected: tempobj
-                },
-                series : [
-                    {
-                        name: '行业',
-                        type: 'pie',
-                        radius : '55%',
-                        center: ['40%', '50%'],
-                        data: seriesDatapie1,
+            title: {
+                text: 'Top 15',
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['Concept Distribution']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: legendDatapie1
+            },
+            series: [
+                {
+                        name: 'Concept Distribution',
+                        type: 'bar',
+                        barWidth: 20,
                         itemStyle: {
-                            emphasis: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            normal: {
+                                label:{
+                                    show: "true",
+                                    position: 'inside',
+                                    textStyle: {
+                                                color:"#0f0101",
+                                                fontStyle:"normal",
+                                                fontWeight:"normal",
+                                                fontSize:16
+                                        }
+                                },
+                                barBorderRadius: 3,
+                                color: new echarts.graphic.LinearGradient(
+                                    0, 0, 0, 1,
+                                    [
+                                        {offset: 0, color: '#394d4e'},
+                                        {offset: 1, color: '#5b5fde'}
+                                    ]
+                                )
                             }
-                        }
+                        },
+                        data: legendDatapiexx
                     }
-                ]
-                    
+            ]
             
-                       
             
         });        
     }).fail(function () {
@@ -251,5 +274,5 @@ function init_echartindustry() {
 
 $(document).ready(function () {
     init_sidebar();
-    init_echartindustry();
+    init_echartconcept();
 });
