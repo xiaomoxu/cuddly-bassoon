@@ -278,10 +278,10 @@ function init_addnews() {
             },
             success: function (dataresult) {
                 console.log("news+news+news+news+news+news");
-                console.log(dataresult);
-                
+                console.log(dataresult);                
                 for(var i=0, ien=dataresult.length; i<ien ; i++ ){
-                  $(".nesadd").append("<li class='news-item'><table cellpadding='4'><tr><td>["+dataresult[i].classify+"]&nbsp;</td><td>"+dataresult[i].title+"</td></tr></table></li>") 
+                  $(".nesadd").append("<li class='news-item'><span>("+i+")&nbsp;["+dataresult[i].classify+"]&nbsp;"+dataresult[i].title+"</span></li>") 
+                  
                 }
             },
             error: function (errorMsg) {                
@@ -391,7 +391,7 @@ function init_echartareapro() {
                     legend: {
                         data: ['上市公司省级分布图'],
                         textStyle: {
-                            color: '#ccc'
+                            color: '#1931eb'
                         }
                     },
                     xAxis: {
@@ -462,17 +462,12 @@ function init_echartareapro() {
 
 }
 
-function init_addMap() {
-
-    if (typeof (echarts) === 'undefined') {
+function init_addMap(){
+   if (typeof (echarts) === 'undefined') {
         return;
     }
-
-    var myChart = echarts.init(document.getElementById('echart_areaindex'));
-    var app = {};
-    var data = [];
-    option = null;
-
+    var myChart = echarts.init(document.getElementById('indexmap'));
+    var data=[];
     var geoCoordMap = {
         '香港特别行政区': [114.08, 22.2],
         '澳门特别行政区': [113.33, 22.13],
@@ -816,7 +811,6 @@ function init_addMap() {
         '甘南藏族自治州': [102.92, 34.98],
         '西宁': [101.78, 36.62],
         '黄南藏族自治州': [102.02, 35.52],
-        '黄南藏族自治州': [102.02, 35.52],
         '海南藏族自治州': [100.62, 36.28],
         '果洛藏族自治州': [100.23, 34.48],
         '玉树藏族自治州': [97.02, 33.0],
@@ -849,20 +843,22 @@ function init_addMap() {
         '图木舒克': [79.13, 39.85],
         '五家渠': [87.53, 44.17]
     };
-
-
+    
+ 
+    
+    
     $.when(
         $.ajax({
             type: "get",
             async: false,
             url: "http://10.20.118.28:9002/stock-static/city",
             dataType: "json",
-            timeout: 500,
+            timeout: 1000,
             beforeSend: function (xhr) {
-                myChart.showLoading();
+                //myChart.showLoading();
             },
             success: function (dataresult) {
-                myChart.hideLoading();
+                //myChart.hideLoading();
 
                 if (dataresult) {
                     for (var i = 0; i < dataresult.length; i++) {
@@ -877,7 +873,9 @@ function init_addMap() {
                             })
                         }
                     }
-                    //console.log(data)
+                    console.log("****")
+                    console.log(data)
+                    console.log("****")
                 }
 
             },
@@ -885,334 +883,118 @@ function init_addMap() {
                 //console.log("data get failed");
             }
         })).done(function () {
-
-
-        myChart.hideLoading();
-        //console.log("done");
-
-        var convertData = function (data) {
-            var res = [];
-            for (var i = 0; i < data.length; i++) {
-                var geoCoord = geoCoordMap[data[i].name];
-                if (geoCoord) {
-                    res.push({
-                        name: data[i].name,
-                        value: geoCoord.concat(data[i].value)
-                    });
-                }
-            }
-            console.log(res);
-            return res;
-        };
-
-        var convertedData = [
-            convertData(data),
-            convertData(data.sort(function (a, b) {
-            //console.log(b.value - a.value);
-            return b.value - a.value;
-            }).slice(0, 3))
-            ];
-
-        option = {
-            backgroundColor: 'rgba(252, 252, 252, 0.54)',
-            animation: true,
-            animationDuration: 1000,
-            animationEasing: 'cubicInOut',
-            animationDurationUpdate: 1000,
-            animationEasingUpdate: 'cubicInOut',
-            title: [
-                {
-                    text: '',
-                    subtext: '',
-                    sublink: '',
-                    left: 'center',
-                    textStyle: {
-                        color: 'rgba(247, 7, 71, 0.99)'
-                    }
-            },
-                {
-                    id: 'statistic',
-                    right: 100,
-                    top: 30,
-                    width: 100,
-                    textStyle: {
-                        color: 'rgba(2, 2, 2, 0.96)',
-                        fontSize: 16
-                    }
-            }
-        ],
-            toolbox: {
-                iconStyle: {
-                    normal: {
-                        borderColor: '#000000'
-                    },
-                    emphasis: {
-                        borderColor: '#000000'
+        
+               var convertData = function (data) {
+    
+                var res = [];
+                for (var i = 0; i < data.length; i++) {
+                    var geoCoord = geoCoordMap[data[i].name];
+                    if (geoCoord) {
+                        res.push({
+                            name: data[i].name,
+                            value: geoCoord.concat(data[i].value)
+                        });
                     }
                 }
+                return res;
+                };
+        
+            option = {
+            backgroundColor: '#404a59',
+            title: {
+                text: '全国主要城市空气质量',
+                subtext: 'data from PM25.in',
+                sublink: 'http://www.pm25.in',
+                x:'center',
+                textStyle: {
+                    color: '#fff'
+                }
             },
-            brush: {
-                outOfBrush: {
-                    color: 'rgba(194, 232, 69, 1)'
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    return params.name + ' : ' + params.value[2];
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                y: 'bottom',
+                x:'right',
+                data:['pm2.5'],
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            visualMap: {
+                min: 0,
+                max: 200,
+                calculable: true,
+                inRange: {
+                    color: ['#50a3ba', '#eac736', '#d94e5d']
                 },
-                brushStyle: {
-                    borderWidth: 2,
-                    color: 'rgba(0,0,0,0.2)',
-                    borderColor: 'rgba(0,0,0,0.5)',
-                },
-                seriesIndex: [0, 1],
-                throttleType: 'debounce',
-                throttleDelay: 50,
-                geoIndex: 0
+                textStyle: {
+                    color: '#fff'
+                }
             },
             geo: {
                 map: 'china',
-                left: '5',
-                right: '5%',
-                center: [125.98561551896913, 36.205000490896193],
-                zoom: 0.52,
                 label: {
                     emphasis: {
                         show: false
                     }
                 },
-                roam: true,
                 itemStyle: {
                     normal: {
-                        areaColor: 'rgba(15, 72, 119, 0.92)',
-                        borderColor: '#fff'
+                        areaColor: '#323c48',
+                        borderColor: '#111'
                     },
                     emphasis: {
-                        areaColor: 'rgba(244, 24, 75, 0.87)'
+                        areaColor: '#2a333d'
                     }
                 }
-            },
-            tooltip: {
-                trigger: 'item'
-            },
-            grid: {
-                right: 60,
-                top: 100,
-                bottom: 40,
-                width: '30%'
-            },
-            xAxis: {
-                type: 'value',
-                scale: true,
-                position: 'top',
-                boundaryGap: false,
-                splitLine: {
-                    show: true
-                },
-                axisLine: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLabel: {
-                    margin: 1,
-                    textStyle: {
-                        color: '#aaa'
-                    }
-                },
-            },
-            yAxis: {
-                type: 'category',
-                name: 'TOP',
-                nameGap: 16,
-                axisLine: {
-                    show: false,
-                    lineStyle: {
-                        color: '#000000'
-                    }
-                },
-                axisTick: {
-                    show: false,
-                    lineStyle: {
-                        color: '#ddd'
-                    }
-                },
-                axisLabel: {
-                    interval: 0,
-                    fontWeight:'bolder',
-                    textStyle: {
-                        color: '#000000'
-                    }
-                },
-                data: []
             },
             series: [
                 {
-                    name: '城市',
+                    name: 'pm2.5',
                     type: 'scatter',
                     coordinateSystem: 'geo',
-                    data: convertedData[0],
-                    symbolSize: function (val) {
-                        return Math.max(val[2] / 10, 8);
-                    },
+                    data: data,
+                    symbolSize: 12,
                     label: {
                         normal: {
-                            formatter: '{b}',
-                            position: 'right',
                             show: false
                         },
                         emphasis: {
-                            show: true
+                            show: false
                         }
                     },
                     itemStyle: {
-                        normal: {
-                            color: '#f40d31'
-                        },
-                        emphasis: {color: 'red'}
+                        emphasis: {
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }
                     }
-            },
-                {
-                    name: 'Top 3',
-                    type: 'effectScatter',
-                    effectType:"ripple",
-                    coordinateSystem: 'geo',
-                    data: convertedData[1],
-                    symbolSize: function (val) {
-                        return Math.max(val[2] / 10, 8);
-                    },
-                    //showEffectOn: 'emphasis',
-                    rippleEffect: {
-                        brushType: 'stroke'
-                    },
-                    hoverAnimation: true,
-                    label: {
-                        normal: {
-                            formatter: '{b}',
-                            position: 'right',
-                            show: true,
-                            color:"#fa0a0a",
-                            fontStyle:"normal",
-                            fontWeight:"bolder",
-                            fontSize:13
-                        }
-                    },
-                    itemStyle: {
-                        normal: {
-                            color:"#ff0000", 
-                            borderColor:"#000",
-                            borderWidth:0,
-                            shadowBlur:10,
-                            shadowColor:"#000",
-                            shadowOffsetX:0,
-                            shadowOffsetY:0,
-                            opacity:1
-                        },
-                        emphasis: {color: 'red'}
-                    },
-                    zlevel: 1
-            },
-                {
-                    id: 'bar',
-                    zlevel: 2,
-                    type: 'bar',
-                    symbol: 'none',
-                    itemStyle: {
-                        normal: {
-                            color: 'rgba(56, 56, 203, 0.85)'
-                        }
-                    },
-                    data: []
-            }
-        ]
-        };
-
-        myChart.on('brushselected', renderBrushed);
-
-        setTimeout(function () {
-            myChart.dispatchAction({
-                type: 'brush',
-                areas: [
-                    {
-                        geoIndex: 0,
-                        brushType: 'polygon',
-                        coordRange: [
-                            [120.97,38.82],[121.23,39.06],[121.55,39.11],[121.85,39.49],[121.95,39.45],[121.99,38.88],[121.80,38.82],[121.36,38.73],[121.36,38.45]
-                        ]
                 }
             ]
-            });
-        }, 0);
-
-
-        function renderBrushed(params) {
-
-            var mainSeries = params.batch[0].selected[0];
-
-            var selectedItems = [];
-            var categoryData = [];
-            var barData = [];
-            var maxBar = 30;
-            var sum = 0;
-            var count = 0;
-
-            for (var i = 0; i < mainSeries.dataIndex.length; i++) {
-                var rawIndex = mainSeries.dataIndex[i];
-                var dataItem = convertedData[0][rawIndex];
-                var pmValue = dataItem.value[2];
-
-                sum += pmValue;
-                count++;
-
-                selectedItems.push(dataItem);
-            }
-
-            selectedItems.sort(function (a, b) {
-                return a.value[2] - b.value[2];
-            });
-
-            for (var i = 0; i < Math.min(selectedItems.length, maxBar); i++) {
-                categoryData.push(selectedItems[i].name);
-                barData.push(selectedItems[i].value[2]);
-            }
-
-            this.setOption({
-                yAxis: {
-                    data: categoryData
-                },
-                xAxis: {
-                    axisLabel: {
-                        show: !!count
-                    }
-                },
-                title: {
-                    id: 'statistic',
-                    //text: count ? '平均: ' + (sum / count).toFixed(4) : ''
-                    text:''
-                },
-                series: {
-                    id: 'bar',
-                    data: barData
-                }
-            });
-        };
-
+        }
+        
         if (option && typeof option === "object") {
             myChart.setOption(option, true);
         }
-
-
-    }).fail(function () {
-        myChart.hideLoading();
-        alert("we failed to get the data for this echart");
+    
+        }).fail(function () {
         console.log("we failed to get the data for this echart!");　　　　
     });
-
+    
+    
 }
-
 
 $(document).ready(function () {
     console.log("load dada for index top")
     init_indextop();
     init_echartareapro();
+    //init_addMap();
     init_pie1();
     init_pie2();
-    init_addnews();
-    //init_addMap();
+    init_addnews();    
 });
