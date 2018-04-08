@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2015-2016 Ryan Li Wan. All rights reserved.
- */
-
 package com.bassoon.stockanalyzer.spark.test;
 
 import java.io.Serializable;
