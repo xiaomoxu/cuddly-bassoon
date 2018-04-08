@@ -8,6 +8,7 @@ public class StockScoreValue implements Serializable {
     private int score = 0;
     private FilterCondition filterCondition;//当前年份指标，跟查询年份相同
     private FilterCondition previousFilterCondition;//去年的的指标
+    private double change;//当年的涨幅，需要根据这个排序
 
     public String getCode() {
         return code;
@@ -47,5 +48,13 @@ public class StockScoreValue implements Serializable {
 
     public void setPreviousFilterCondition(FilterCondition previousFilterCondition) {
         this.previousFilterCondition = previousFilterCondition;
+    }
+
+    public double getChange() {
+        return change;
+    }
+
+    public void setChange(double change) {
+        this.change = change;
     }
 }
