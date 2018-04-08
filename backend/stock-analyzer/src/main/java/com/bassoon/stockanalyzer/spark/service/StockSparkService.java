@@ -44,7 +44,6 @@ public class StockSparkService implements Serializable {
         Dataset<Stock> dataset = sparkRepository.getDatasetByTable("stock").as(Encoders.bean(Stock.class));
         dataset.persist(StorageLevel.MEMORY_AND_DISK());
         List<Stock> stockList = dataset.collectAsList();
-        sparkRepository.stopAndClose();
         StockListWrapper stocks = new StockListWrapper();
         stocks.setStockList(stockList);
         jedis.set("stock", JsonUtils.objectToJson(stocks));
@@ -111,7 +110,6 @@ public class StockSparkService implements Serializable {
         });
         List<StockIndexValue> indexList = dataset.collectAsList();
         jedis.set("stock_index", JsonUtils.objectToJson(indexList));
-        sparkRepository.stopAndClose();
         return indexList;
     }
 
@@ -131,7 +129,6 @@ public class StockSparkService implements Serializable {
                 as(Encoders.bean(StockNewsValue.class)).as(Encoders.bean(StockNewsValue.class));
         List<StockNewsValue> indexList = dataset.collectAsList();
         jedis.set("stock_news", JsonUtils.objectToJson(indexList));
-        sparkRepository.stopAndClose();
         return indexList;
     }
 }
