@@ -232,14 +232,14 @@ function init_echartconcept() {
                 {
                         name: 'Concept Distribution',
                         type: 'bar',
-                        barWidth: 20,
+                        barWidth: 23,
                         itemStyle: {
                             normal: {
                                 label:{
                                     show: "true",
                                     position: 'inside',
                                     textStyle: {
-                                                color:"#0f0101",
+                                                color:"#0b0b0b",
                                                 fontStyle:"normal",
                                                 fontWeight:"normal",
                                                 fontSize:16
@@ -249,8 +249,8 @@ function init_echartconcept() {
                                 color: new echarts.graphic.LinearGradient(
                                     0, 0, 0, 1,
                                     [
-                                        {offset: 0, color: '#394d4e'},
-                                        {offset: 1, color: '#5b5fde'}
+                                        {offset: 0, color: '#7eacdb'},
+                                        {offset: 1, color: '#4887ed'}
                                     ]
                                 )
                             }
