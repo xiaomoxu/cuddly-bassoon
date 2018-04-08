@@ -803,7 +803,7 @@ a:focus {
 }
 .nav li.current-page {
     /*background: rgba(255, 255, 255, 0.05)*/
-    background: #fa0303
+    background: #1f7c80;
 }
 .nav li li li.current-page {
     background: none
