@@ -28,7 +28,7 @@ public class AccumulateValue implements Serializable{
         return value;
     }
 
-    public void setValue(double asset) {
+    public void setValue(double value) {
         this.value = value;
     }
 }
