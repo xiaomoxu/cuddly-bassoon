@@ -11,6 +11,11 @@ public class AccumulateValue implements Serializable{
         this.value = value;
     }
 
+    public AccumulateValue() {
+        this.date = "";
+        this.value = 0;
+    }
+
     public String getDate() {
         return date;
     }

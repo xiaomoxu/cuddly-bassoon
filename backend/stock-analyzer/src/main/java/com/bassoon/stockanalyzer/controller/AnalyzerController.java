@@ -128,15 +128,17 @@ public class AnalyzerController {
 
     @GetMapping(value = "/accum/{year}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
-    public String getAccumulateData(HttpServletResponse rsp,@PathVariable String year) {
-        String result = accumulateService.getAccumulatedData(year,false);
+    public List<AccumulateValue> getAccumulateData(HttpServletResponse rsp,@PathVariable String year) {
+        List<AccumulateValue> result = accumulateService.getAccumulatedData(year,false);
+        rsp.addHeader("X-Total-Count", String.valueOf(result.size()));
         return result;
     }
 
     @GetMapping(value = "/scope/{year}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
-    public String getQualityData(HttpServletResponse rsp,@PathVariable String year) {
-        String result = accumulateService.getQualityStocks(year,false);
+    public List<StockScoreValue> getQualityData(HttpServletResponse rsp,@PathVariable String year) {
+        List<StockScoreValue> result = accumulateService.getQualityStocks(year,false);
+        rsp.addHeader("X-Total-Count", String.valueOf(result.size()));
         return result;
     }
 }

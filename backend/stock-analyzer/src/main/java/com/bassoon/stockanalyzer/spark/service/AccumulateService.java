@@ -40,7 +40,7 @@ public class AccumulateService implements Serializable{
 
     private static double start_memory = 50000;
 
-    public String getAccumulatedData(String year, boolean reload) {
+    public List<AccumulateValue> getAccumulatedData(String year, boolean reload) {
         List<AccumulateValue> accum_sum = new ArrayList<>();
         String redis_key = String.format("getAccumulatedData_%s",year);
 
@@ -49,7 +49,7 @@ public class AccumulateService implements Serializable{
             String json = jedis.get(redis_key);
             if (json != null && !json.equals("")) {
                 System.out.println("------Get date from redis by key " + redis_key);
-                return json;
+                return JsonUtils.jsonToObject(json,ArrayList.class,AccumulateValue.class);
             }
         }
         //init summary list
@@ -57,8 +57,7 @@ public class AccumulateService implements Serializable{
             accum_sum.add(new AccumulateValue(String.format("%s-%02d-01",year,m),0));
         }
         //get selected stocks list
-        List<StockScoreValue> selects = JsonUtils.jsonToObject(getQualityStocks(year, false)
-                ,ArrayList.class,StockScoreValue.class);
+        List<StockScoreValue> selects = getQualityStocks(year, false);
 
         //get stock date and summary
         for(int i = 0; i < selects.size(); i++) {
@@ -87,7 +86,7 @@ public class AccumulateService implements Serializable{
         //save to redis
         jedis.set(redis_key, JsonUtils.objectToJson(accum_sum));
 
-        return JsonUtils.objectToJson(accum_sum);
+        return accum_sum;
     }
 
 
@@ -135,7 +134,7 @@ public class AccumulateService implements Serializable{
         return y_list;
     }
 
-    public String getQualityStocks(String year,boolean reload)
+    public List<StockScoreValue> getQualityStocks(String year,boolean reload)
     {
         int col_code = 1;
         int col_roe = 2;//净资产收益率 来源于 stock_profit_data  roe > 0  按照4个季度总和计算
@@ -156,7 +155,7 @@ public class AccumulateService implements Serializable{
             String json = jedis.get(redis_key);
             if (json != null && !json.equals("")) {
                 System.out.println("------Get date from redis by key " + redis_key);
-                return json;
+                return JsonUtils.jsonToObject(json,ArrayList.class,StockScoreValue.class);
             }
         }
 
@@ -169,9 +168,7 @@ public class AccumulateService implements Serializable{
                 .equalTo(ds_pre.col("code")),"inner");
         ds_all.show(100);
 
-        //Encoder<StockQuality> stockQualityEncoder = Encoders.bean(StockQuality.class);
         Encoder<StockScoreValue> stockQualityEncoder = Encoders.bean(StockScoreValue.class);
-        //Dataset<StockQuality> ds_quality = ds_all.map(new MapFunction<Row, StockQuality>() {
         Dataset<StockScoreValue> ds_quality = ds_all.map(new MapFunction<Row, StockScoreValue>() {
             @Override
             public StockScoreValue call(Row row) throws Exception {
@@ -212,7 +209,6 @@ public class AccumulateService implements Serializable{
         },stockQualityEncoder);
         ds_quality.show(100);
 
-        //Dataset<StockQuality> ds_sort = ds_quality.sort(col("quality").desc());
         Dataset<StockScoreValue> ds_sort = ds_quality.sort(col("score").desc());
         ds_sort.show(100);
         List<StockScoreValue> q_list = ds_sort.takeAsList(20);
@@ -224,6 +220,6 @@ public class AccumulateService implements Serializable{
         //save to redis
         jedis.set(redis_key, JsonUtils.objectToJson(q_list));
 
-        return JsonUtils.objectToJson(q_list);
+        return q_list;
     }
 }
