@@ -3,10 +3,17 @@ package com.bassoon.stockanalyzer.spark.test;
 import static org.apache.spark.sql.functions.expr;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -28,6 +35,7 @@ import scala.collection.Seq;
 public class StockSumming implements Serializable {
 
   private String code;
+  private String name;
   private double roe;
   private double cashflowratio;
   private double currentratio;
@@ -41,6 +49,14 @@ public class StockSumming implements Serializable {
 
   public String getCode() {
     return code;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public void setRoe(double roe) {
@@ -92,41 +108,26 @@ public class StockSumming implements Serializable {
   }
 
   public static void main(String[] args) {
-//    currentasset_turnover_summing();
-    joined_summing();
+    Repo.createAllTempViews();
+    for (Row row : getSumming(" WHERE code < 20").collectAsList()) {
+      try {
+        Repo.write(row);
+      } catch (SQLException sqle) {
+        sqle.printStackTrace();
+      }
+    }
   }
 
-  public static void currentasset_turnover_summing() {
-    Repo.createTempView("stock_operation_data", "turnover_view");
-    Dataset<Row> turnover = Repo.sql("SELECT code, currentasset_turnover, year, quarter FROM turnover_view WHERE code = 002116");
-    Dataset<Row> summed = turnover
-        .groupBy("code", "year")
-        .sum("currentasset_turnover");
-    summed.orderBy("code", "year").show(100);
-  }
-
-  public static void joined_summing() {
-    String codeCondition = "";
-//    codeCondition = " WHERE code = 000004";
-//    codeCondition = " WHERE code = 002116";
-
-    // Create temp views
-
-    Repo.createTempView("stock_basics", "basics_view");
-    Repo.createTempView("stock_profit_data", "roe_view");
-    Repo.createTempView("stock_cashflow_data", "cashflowratio_view");
-    Repo.createTempView("stock_debtpay_data", "currentratio_view");
-    Repo.createTempView("stock_growth_data", "epsg_view");
-    Repo.createTempView("stock_operation_data", "turnover_view");
+  public static Dataset<Row> getSumming(String whereClause) {
 
     // Create initial datasets
 
-    Dataset<Row> basics = Repo.sql("SELECT code FROM basics_view" + codeCondition);
-    Dataset<Row> roe = Repo.sql("SELECT code, roe, year, quarter FROM roe_view" + codeCondition);
-    Dataset<Row> cashflowration = Repo.sql("SELECT code, cashflowratio, year, quarter FROM cashflowratio_view" + codeCondition);
-    Dataset<Row> currentratio = Repo.sql("SELECT code, currentratio, year, quarter FROM currentratio_view" + codeCondition);
-    Dataset<Row> epsg = Repo.sql("SELECT code, epsg, year, quarter FROM epsg_view" + codeCondition);
-    Dataset<Row> turnover = Repo.sql("SELECT code, currentasset_turnover, year, quarter FROM turnover_view" + codeCondition);
+    Dataset<Row> basics = Repo.sql("SELECT code, name FROM basics_view" + whereClause);
+    Dataset<Row> roe = Repo.sql("SELECT code, roe, year, quarter FROM roe_view" + whereClause);
+    Dataset<Row> cashflowration = Repo.sql("SELECT code, cashflowratio, year, quarter FROM cashflowratio_view" + whereClause);
+    Dataset<Row> currentratio = Repo.sql("SELECT code, currentratio, year, quarter FROM currentratio_view" + whereClause);
+    Dataset<Row> epsg = Repo.sql("SELECT code, epsg, year, quarter FROM epsg_view" + whereClause);
+    Dataset<Row> turnover = Repo.sql("SELECT code, currentasset_turnover, year, quarter FROM turnover_view" + whereClause);
 
     // Remove duplicate rows
 
@@ -151,18 +152,14 @@ public class StockSumming implements Serializable {
 
     Dataset<Row> summed = joined
         .groupBy("code", "year")
-//        .sum("roe", "cashflowratio", "currentratio", "epsg", "currentasset_turnover");
         .agg(
             expr("mySum(roe)"), expr("mySum(cashflowratio)"), expr("mySum(currentratio)"),
             expr("mySum(epsg)"), expr("mySum(currentasset_turnover)")
         );
 
-    summed.orderBy("code", "year").show(100);
+    // Return
 
-    // Encoding
-
-//    Dataset<StockSumming> stock = summed.as(Encoders.bean(StockSumming.class));
-//    stock.orderBy("code", "year").show(100);
+    return summed;
   }
 
   public static class MySum extends UserDefinedAggregateFunction {
@@ -248,12 +245,15 @@ public class StockSumming implements Serializable {
     private static final String URL = "jdbc:mysql://10.20.116.107:3306/CN_BASSOON?characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull";
     private static final Properties PROPERTIES;
     private static final SparkSession SPARK;
+    private static Connection connection;
+    private static PreparedStatement statement;
 
     static {
       PROPERTIES = new Properties();
       PROPERTIES.put("driver", "com.mysql.jdbc.Driver");
       PROPERTIES.put("user", "root");
       PROPERTIES.put("password", "Liaobi()7595k");
+
       SPARK = SparkSession.builder().config(
           new SparkConf()
               .setAppName("turnover")
@@ -262,6 +262,12 @@ public class StockSumming implements Serializable {
               .setJars(new String[] {"D:\\workspace\\cuddly-bassoon\\backend\\stock-analyzer\\target\\stock-analyzer-0.0.1-SNAPSHOT.jar.original"})
       ).getOrCreate();
       SPARK.udf().register("mySum", new MySum());
+
+      try {
+        connection = DriverManager.getConnection(URL, "root", "Liaobi()7595k");
+        statement = connection.prepareStatement("INSERT INTO stock_summing VALUES(default, ?, ?, ?, ?, ?, ?, ?)");
+      } catch (SQLException sqle) {
+      }
     }
 
     public static Dataset<Row> get(String table) {
@@ -276,8 +282,31 @@ public class StockSumming implements Serializable {
       get(table).createOrReplaceTempView(tempViewName);
     }
 
+    public static void createAllTempViews() {
+      Repo.createTempView("stock_basics", "basics_view");
+      Repo.createTempView("stock_profit_data", "roe_view");
+      Repo.createTempView("stock_cashflow_data", "cashflowratio_view");
+      Repo.createTempView("stock_debtpay_data", "currentratio_view");
+      Repo.createTempView("stock_growth_data", "epsg_view");
+      Repo.createTempView("stock_operation_data", "turnover_view");
+    }
+
     public static Dataset<Row> sql(String sql) {
       return SPARK.sql(sql);
+    }
+
+    public static void write(Row row) throws SQLException {
+      String code = row.getString(0);
+      long year = row.getLong(1);
+      statement.setString(1, code); // code
+      statement.setDouble(2, row.getDouble(2)); // roe
+      statement.setDouble(3, row.getDouble(3)); // cashflowratio
+      statement.setDouble(4, row.getDouble(4)); // currentratio
+      statement.setDouble(5, row.getDouble(5)); // epsg
+      statement.setDouble(6, row.getDouble(6)); // currentasset_turnover
+      statement.setLong(7, year); // year
+      statement.executeUpdate();
+      System.err.println(">>>>>>>>>>>>>>>>>>>> code[" + code + "]year[" + year + "] written to database.");
     }
 
   }
