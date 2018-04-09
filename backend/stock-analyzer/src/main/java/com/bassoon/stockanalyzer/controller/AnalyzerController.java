@@ -2,12 +2,14 @@ package com.bassoon.stockanalyzer.controller;
 
 import com.bassoon.stockanalyzer.domain.Stock;
 import com.bassoon.stockanalyzer.model.PageResult;
+import com.bassoon.stockanalyzer.service.JsonUtils;
 import com.bassoon.stockanalyzer.service.StockService;
 import com.bassoon.stockanalyzer.spark.model.*;
 import com.bassoon.stockanalyzer.spark.service.ScorePolicyService;
 import com.bassoon.stockanalyzer.spark.service.StockSparkService;
 import com.bassoon.stockanalyzer.spark.service.StockStatisticService;
 import com.bassoon.stockanalyzer.spark.service.AlternatePolicyService;
+import com.bassoon.stockanalyzer.spark.service.AccumulateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,8 @@ public class AnalyzerController {
     @Autowired
     private StockSparkService stockSparkService;
 
+    @Autowired
+    private AccumulateService accumulateService;
 
     @Deprecated
     @RequestMapping(value = "/stocklist", method = RequestMethod.GET)
@@ -120,5 +124,19 @@ public class AnalyzerController {
         List<StockNewsValue> indexList = stockSparkService.getStockNews(false);
         rsp.addHeader("X-Total-Count", String.valueOf(indexList.size()));
         return indexList;
+    }
+
+    @GetMapping(value = "/accum/{year}", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public String getAccumulateData(HttpServletResponse rsp,@PathVariable String year) {
+        String result = accumulateService.getAccumulatedData(year,false);
+        return result;
+    }
+
+    @GetMapping(value = "/scope/{year}", produces = "application/json;charset=UTF-8")
+    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+    public String getQualityData(HttpServletResponse rsp,@PathVariable String year) {
+        String result = accumulateService.getQualityStocks(year,false);
+        return result;
     }
 }
