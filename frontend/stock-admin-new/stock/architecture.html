@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>DataTables | Gentelella</title>
+    <title>Stock Panel</title>
 
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +27,17 @@
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.css" rel="stylesheet">
   </head>
-
+  <style type="text/css">
+   .dtab{
+        margin-top: 10px;
+        border:4px solid #96c2f1;
+        font-size:20px;
+        color:black;
+        font-weight:bold;
+        /*background:#074bcb;*/
+   },
+  p{} 
+  </style>    
   <body class="nav-md">
     <div class="container body">
       <div class="main_container">
@@ -96,9 +106,46 @@
                   <div class="x_content">   
                       
                     <div style="float:left;margin-left:5px;">
+                        <!--
                       <ul>
                           <li><img src="files/cuddly-bassoon%20v1.0.png"></li>
                       </ul>
+                        -->
+                        <ul class="nav nav-pills" role="tablist">
+                          <li role="presentation" class="active"><a href="#home" role="tab" data-toggle="tab" style="font-size:18px;">Architecture</a></li> 
+                          <li role="presentation"><a href="#Objective" role="tab" data-toggle="tab" style="font-size:18px;">Objective</a></li>   
+                          <li role="presentation"><a href="#Meaning" role="tab" data-toggle="tab" style="font-size:18px;">Meaning </a></li>
+                        </ul>                        
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="home">
+                                <br>
+                                <a href= ><img src="files/cuddly-bassoon%20v1.0.png"></a>
+                                <br><br>
+                                <div class="dtab">
+                                    <p>人生若只如初见，何事秋风悲画扇。</p>
+                                    <p>11111</p>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="Objective">
+                                <br>
+                                <img src="files/bigdata.jpg">
+                                <br><br>
+                                <div class="dtab">
+                                    <p>等闲变却故人心，却道故人心易变。</p>
+                                    <p>2222</p>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="Meaning">
+                                <br>
+                                <img src="files/yp.jpg">
+                                <br><br>
+                                <div class="dtab">
+                                    <p>骊山语罢清宵半，夜雨霖铃终不怨。何如薄幸锦衣郎，比翼连枝当日愿。</p>
+                                    <p>3333</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                       
                   </div>
@@ -132,8 +179,7 @@
     <!-- iCheck -->
     <script src="../vendors/iCheck/icheck.min.js"></script>
 
-
     <!-- Custom Theme Scripts -->
-    <script src="../build/js/DataTable.js"></script>
+    <script src="../build/js/architecture.js"></script>
   </body>
 </html>
