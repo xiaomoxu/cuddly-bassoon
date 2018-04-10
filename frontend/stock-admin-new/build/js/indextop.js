@@ -3,7 +3,7 @@ function init_indextop() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-index/000001,000300,000905,399006,000016,399001",
+            url: "http://10.48.6.219:9002/stock-index/000001,000300,000905,399006,000016,399001",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -29,7 +29,7 @@ function init_indextop() {
         })).done(function () {
             console.log("done"); 
         }).fail(function () {
-            echartLine.hideLoading();
+            //echartLine.hideLoading();
             alert("we failed to get the data for index top");        
             console.log("we failed to get the data for this echart!");　　　　
         });
@@ -65,7 +65,7 @@ function init_pie1() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-static/industry",
+            url: "http://10.48.6.219:9002/stock-static/industry",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -172,7 +172,7 @@ function init_pie2() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-static/concept",
+            url: "http://10.48.6.219:9002/stock-static/concept",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -271,7 +271,7 @@ function init_addnews() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-news",
+            url: "http://10.48.6.219:9002/stock-news",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -354,7 +354,7 @@ function init_echartareapro() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-static/province",
+            url: "http://10.48.6.219:9002/stock-static/province",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -851,7 +851,7 @@ function init_addMap(){
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.20.118.28:9002/stock-static/city",
+            url: "http://10.48.6.219:9002/stock-static/city",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -989,6 +989,196 @@ function init_addMap(){
     
 }
 
+function init_selDate(){
+    
+    var selValue = new Date();  
+    var endYear = selValue.getFullYear();
+    for (var i = 2014; i <= endYear-1; i++) {  
+        $("#year").append("<option>"+i+"</option>");  
+    }
+    
+}
+
+function btnrep(){
+    
+    
+    var urlpara=$("#year ").val(); 
+    var urlajax1 = "http://10.48.6.219:9002/scope/"+urlpara; //table
+    var urlajax2 = "http://10.48.6.219:9002/accum/"+urlpara; //chart
+    
+    console.log(urlajax1+"<<<<<>>>>>"+urlajax2);
+    var echartLineindex = echarts.init(document.getElementById('echart_line_index'))
+    echartLineindex.clear();
+    //$("#datatable  tr:not(:first)").empty(""); 
+
+    
+    var xAxisdataxx = [];
+    var seriesdatayy = [];
+    var seriesdata_tt=[];
+    
+    
+    $.when(
+        
+        $.ajax({ //chart 
+            type: "get",
+            async: false,
+            url: urlajax2,
+            dataType: "json",
+            timeout: 1000,
+            beforeSend: function (xhr) {
+                //echartLineindex.showLoading();
+            },
+            success: function (selstockdt) {
+                //echartLineindex.hideLoading();
+                console.log(selstockdt)
+                if (selstockdt) {
+                    for (var i = 0; i < selstockdt.length; i++) {
+                        xAxisdataxx.push(selstockdt[i].date);
+                        seriesdatayy.push((selstockdt[i].value).toFixed(2));
+                    }
+                }
+                console.log(seriesdatayy);
+            },
+            error: function (errorMsg) {
+                console.log("data get failed");
+            }
+        })).done(function () {
+        //echartLine.hideLoading();
+        console.log("done");
+             ///////////////////////   
+         echartLineindex.setOption({
+                    xAxis: {
+                        type: 'category',
+                        data:xAxisdataxx
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data:seriesdatayy, 
+                        type: 'line'
+                    }]
+            });
+                ///////////////////////
+        
+    
+    }).fail(function () {
+        echartLineindex.hideLoading();
+        alert("不能取得数据");        
+        console.log("we failed to get the data for this echart!");　　　　
+    });
+    
+    
+       
+}
+
+function init_indextable(){
+    var tablesDataf=[];
+    //////////////
+     $('#datatable').dataTable({
+
+            "ajax": {
+                "type": "GET",
+                "url": "http://10.48.6.219:9002/scope/2014",
+                "dataType": "json",
+                "contentType": "application/x-www-form-urlencoded; charset=UTF-8",
+                "dataSrc": function (dataresulttable) {
+                        for (var i=0, ien=dataresulttable.length; i<ien ; i++ ) {
+                            console.log("wewqeq");
+                            tablesDataf.push({
+                                code:dataresulttable[i].code,
+                                name:dataresulttable[i].name,
+                                score:dataresulttable[i].score,
+                                roe:(dataresulttable[i].filterCondition.roe).toFixed(2),
+                                grossProfitRatio:dataresulttable[i].filterCondition.grossProfitRatio,
+                                cashFlowRatio:(dataresulttable[i].filterCondition.cashFlowRatio).toFixed(2),
+                                debtCurrentRatio:(dataresulttable[i].filterCondition.debtCurrentRatio).toFixed(2),
+                                epsg:(dataresulttable[i].filterCondition.epsg).toFixed(2),
+                                currentAssetTurnover:(dataresulttable[i].filterCondition.currentAssetTurnover).toFixed(2),
+                            })
+                            
+                        }
+                console.log(tablesDataf);
+                return tablesDataf;
+                } 
+            },
+
+            "columns": [
+
+                {
+                    "title": "Code",
+                    "data": "code"
+                },
+                {
+                    "title": "Name",
+                    "data": "name"
+                },
+                {
+                    "title": "Score",
+                    "data": "score"
+                },
+                {
+                    "title": "Roe",
+                    "data": "roe"
+                },
+                {
+                    "title": "GrossPro",
+                    "data": "grossProfitRatio"
+                },
+                {
+                    "title": "CashFlow",
+                    "data": "cashFlowRatio"
+                },
+                {
+                    "title": "Curdebt",
+                    "data": "debtCurrentRatio"
+                },
+                {
+                    "title": "Epsg",
+                    "data": "epsg"
+                },
+                {
+                    "title": "CurAsset",
+                    "data": "currentAssetTurnover"
+                }
+                ]
+        });
+
+
+
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+        $('#datatable-responsive').DataTable();
+        $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+        var $datatable = $('#datatable-checkbox');
+    
+        $datatable.dataTable({
+            'order': [[1, 'asc']],
+            'columnDefs': [
+                {
+                    orderable: false,
+                    targets: [0]
+                }
+                ]
+        });
+
+        $datatable.on('draw.dt', function () {
+            $('checkbox input').iCheck({
+                checkboxClass: 'icheckbox_flat-green'
+            });
+        });
+
+        //TableManageButtons.init();
+    
+    ////////////
+    
+    
+    
+}
+
 $(document).ready(function () {
     
    $('.collapse-link').on('click', function () {
@@ -1013,11 +1203,12 @@ $(document).ready(function () {
         var $BOX_PANEL = $(this).closest('.x_panel');
 
         $BOX_PANEL.remove();
-    });
+    });   
     
-    
-    console.log("load dada for index top")
+    init_selDate();
+    init_indextable();
     init_indextop();
+    btnrep();
     init_echartareapro();
     //init_addMap();
     init_pie1();
