@@ -20,6 +20,7 @@ import scala.Int;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -108,10 +109,13 @@ public class AccumulateService implements Serializable{
 
         //Get 1st day from 1 to 12 mouth
         for (int mouth = 1; mouth <= 12; mouth++){
+            String s_d = String.format("%s-%02d-01",year,mouth);
+            String e_d = String.format("%s-%02d-%02d",year,mouth,getLastDayOfMouth(s_d));
             String d = String.format("%s-%02d-%02d", year, mouth, 1);
-            //Using like is a good choice
-            Dataset<Row> m_ds = ds_stock.filter(col("date")
-                    .like(String.format("%s-%02d-%%",year,mouth)))
+            //Using like is not a good choice
+            Dataset<Row> m_ds = ds_stock.filter(col("date").geq(s_d))
+                    .filter(col("date").leq(e_d))
+                    //.like(String.format("%s-%02d-%%",year,mouth)))
                     .sort(col("date").desc());
             //m_ds.show();
             if (m_ds.count() > 0) {
@@ -221,5 +225,14 @@ public class AccumulateService implements Serializable{
         jedis.set(redis_key, JsonUtils.objectToJson(q_list));
 
         return q_list;
+    }
+
+    private static int getLastDayOfMouth(String date){
+        LocalDate convertedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-M-d"));
+        LocalDate d = convertedDate.withDayOfMonth(convertedDate.getMonth().length(convertedDate.isLeapYear()));
+
+        //System.out.println(d);
+        //System.out.println(d.getDayOfMonth());
+        return d.getDayOfMonth();
     }
 }
