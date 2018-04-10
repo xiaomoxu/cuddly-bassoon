@@ -111,7 +111,6 @@ public class AccumulateService implements Serializable{
         for (int mouth = 1; mouth <= 12; mouth++){
             String s_d = String.format("%s-%02d-01",year,mouth);
             String e_d = String.format("%s-%02d-%02d",year,mouth,getLastDayOfMouth(s_d));
-            String d = String.format("%s-%02d-%02d", year, mouth, 1);
             //Using like is not a good choice
             Dataset<Row> m_ds = ds_stock.filter(col("date").geq(s_d))
                     .filter(col("date").leq(e_d))
@@ -131,7 +130,7 @@ public class AccumulateService implements Serializable{
                 y_list.add(new AccumulateValue(String.format("%s-%02d-01", year,mouth), total_memory));
             }
             else {
-                System.out.println(String.format("-----cannot find stock %s on %s",code,d));
+                System.out.println(String.format("-----cannot find stock %s on %s",code,e_d));
             }
         }
 
@@ -141,13 +140,14 @@ public class AccumulateService implements Serializable{
     public List<StockScoreValue> getQualityStocks(String year,boolean reload)
     {
         int col_code = 1;
-        int col_roe = 2;//净资产收益率 来源于 stock_profit_data  roe > 0  按照4个季度总和计算
+        int col_name = 2;
+        int col_roe = 3;//净资产收益率 来源于 stock_profit_data  roe > 0  按照4个季度总和计算
         int col_grossProfitRatio;//毛利率 stock_profit_data  roe  current > last year 按照4个季度中和
-        int col_cashFlowRatio = 3;//现金流量比率  来源于stock_cashflow_data  cashflowratio (Operating Cash Flow Ratio)  > 0 按照4个季度总和
-        int col_debtCurrentRatio = 4;//* current > last year 4个季度总和 stock_debtpay_data
-        int col_epsg = 5;//每股收益增长率 current > last year > 0 4季度总和    stock_growth_data
-        int col_currentAssetTurnover = 6; //资产周转率 stock_operation_data  current > last year 按照4个季度总和
-        int col_max = 8;
+        int col_cashFlowRatio = 4;//现金流量比率  来源于stock_cashflow_data  cashflowratio (Operating Cash Flow Ratio)  > 0 按照4个季度总和
+        int col_debtCurrentRatio = 5;//* current > last year 4个季度总和 stock_debtpay_data
+        int col_epsg = 6;//每股收益增长率 current > last year > 0 4季度总和    stock_growth_data
+        int col_currentAssetTurnover = 7; //资产周转率 stock_operation_data  current > last year 按照4个季度总和
+        int col_max = 9;
         String pre_year = String.valueOf(Integer.parseInt(year) - 1);
         String table_stock = "stock_summing";
 
@@ -170,7 +170,7 @@ public class AccumulateService implements Serializable{
 
         Dataset<Row> ds_all = ds_cur.join(ds_pre,ds_cur.col("code")
                 .equalTo(ds_pre.col("code")),"inner");
-        ds_all.show(100);
+        ds_all.show();
 
         Encoder<StockScoreValue> stockQualityEncoder = Encoders.bean(StockScoreValue.class);
         Dataset<StockScoreValue> ds_quality = ds_all.map(new MapFunction<Row, StockScoreValue>() {
@@ -178,7 +178,7 @@ public class AccumulateService implements Serializable{
             public StockScoreValue call(Row row) throws Exception {
                 StockScoreValue stockScoreValue = new StockScoreValue();
                 stockScoreValue.setCode(row.getString(col_code));
-                stockScoreValue.setName("Todo");
+                stockScoreValue.setName(row.getString(col_name));
                 FilterCondition cur_filter = new FilterCondition();
                 FilterCondition pre_filter = new FilterCondition();
                 cur_filter.setRoe(row.getDouble(col_roe));
@@ -211,10 +211,10 @@ public class AccumulateService implements Serializable{
                 return stockScoreValue;
             }
         },stockQualityEncoder);
-        ds_quality.show(100);
+        ds_quality.show();
 
         Dataset<StockScoreValue> ds_sort = ds_quality.sort(col("score").desc());
-        ds_sort.show(100);
+        ds_sort.show();
         List<StockScoreValue> q_list = ds_sort.takeAsList(20);
 
         for(int i =0 ;i < q_list.size();i++){
