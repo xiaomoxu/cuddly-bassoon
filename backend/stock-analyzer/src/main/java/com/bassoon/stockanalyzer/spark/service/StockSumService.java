@@ -62,33 +62,27 @@ public class StockSumService implements Serializable {
 
     // Create temp views
 
-    Dataset<Row> dsBasics = sparkRepository.getDatasetByTable("stock_basics");
-    dsBasics.createOrReplaceTempView("basics_view");
-    Dataset<Row> dsRoe = sparkRepository.getDatasetByTable("stock_profit_data");
-    dsRoe.createOrReplaceTempView("roe_view");
-    Dataset<Row> dsCashflowRatio = sparkRepository.getDatasetByTable("stock_cashflow_data");
-    dsCashflowRatio.createOrReplaceTempView("cashflowratio_view");
-    Dataset<Row> dsCurrentRatio = sparkRepository.getDatasetByTable("stock_debtpay_data");
-    dsCurrentRatio.createOrReplaceTempView("currentratio_view");
-    Dataset<Row> dsEpsg = sparkRepository.getDatasetByTable("stock_growth_data");
-    dsEpsg.createOrReplaceTempView("epsg_view");
-    Dataset<Row> dsTurnover = sparkRepository.getDatasetByTable("stock_operation_data");
-    dsTurnover.createOrReplaceTempView("turnover_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_basics", "basics_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_profit_data", "roe_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_cashflow_data", "cashflowratio_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_debtpay_data", "currentratio_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_growth_data", "epsg_view");
+    sparkRepository.createOrReplaceTempViewByTable("stock_operation_data", "turnover_view");
 
     // Create initial datasets
 
-    dsBasics = dsBasics
-        .sqlContext().sql("SELECT code, name FROM basics_view" + whereClause);
-    dsRoe = dsRoe
-        .sqlContext().sql("SELECT code, name, roe, year, quarter FROM roe_view" + whereClause);
-    dsCashflowRatio = dsCashflowRatio
-        .sqlContext().sql("SELECT code, name, cashflowratio, year, quarter FROM cashflowratio_view" + whereClause);
-    dsCurrentRatio = dsCurrentRatio
-        .sqlContext().sql("SELECT code, name, currentratio, year, quarter FROM currentratio_view" + whereClause);
-    dsEpsg = dsEpsg
-        .sqlContext().sql("SELECT code, name, epsg, year, quarter FROM epsg_view" + whereClause);
-    dsTurnover = dsTurnover
-        .sqlContext().sql("SELECT code, name, currentasset_turnover, year, quarter FROM turnover_view" + whereClause);
+    Dataset<Row> dsBasics = sparkRepository.getDatasetBySql(
+        "SELECT code, name FROM basics_view" + whereClause);
+    Dataset<Row> dsRoe = sparkRepository.getDatasetBySql(
+        "SELECT code, name, roe, year, quarter FROM roe_view" + whereClause);
+    Dataset<Row> dsCashflowRatio = sparkRepository.getDatasetBySql(
+        "SELECT code, name, cashflowratio, year, quarter FROM cashflowratio_view" + whereClause);
+    Dataset<Row> dsCurrentRatio = sparkRepository.getDatasetBySql(
+        "SELECT code, name, currentratio, year, quarter FROM currentratio_view" + whereClause);
+    Dataset<Row> dsEpsg = sparkRepository.getDatasetBySql(
+        "SELECT code, name, epsg, year, quarter FROM epsg_view" + whereClause);
+    Dataset<Row> dsTurnover = sparkRepository.getDatasetBySql(
+        "SELECT code, name, currentasset_turnover, year, quarter FROM turnover_view" + whereClause);
 
     // Cleanup rows
 
