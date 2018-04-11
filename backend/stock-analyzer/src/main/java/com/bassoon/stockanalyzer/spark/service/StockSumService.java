@@ -22,7 +22,9 @@ import org.apache.spark.api.java.function.ForeachFunction;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.encoders.RowEncoder;
 import org.apache.spark.sql.expressions.MutableAggregationBuffer;
 import org.apache.spark.sql.expressions.UserDefinedAggregateFunction;
 import org.apache.spark.sql.types.DataType;
@@ -43,6 +45,10 @@ public class StockSumService implements Serializable {
 
   @Autowired
   private SparkRepository sparkRepository;
+
+  public StockSumService() {
+    sparkRepository.registerUdaf("mySum", new MySum());
+  }
 
   public void doSum() {
     doSum("");
@@ -74,15 +80,55 @@ public class StockSumService implements Serializable {
     dsBasics = dsBasics
         .sqlContext().sql("SELECT code, name FROM basics_view" + whereClause);
     dsRoe = dsRoe
-        .sqlContext().sql("SELECT code, roe, year, quarter FROM roe_view" + whereClause);
+        .sqlContext().sql("SELECT code, name, roe, year, quarter FROM roe_view" + whereClause);
     dsCashflowRatio = dsCashflowRatio
-        .sqlContext().sql("SELECT code, cashflowratio, year, quarter FROM cashflowratio_view" + whereClause);
+        .sqlContext().sql("SELECT code, name, cashflowratio, year, quarter FROM cashflowratio_view" + whereClause);
     dsCurrentRatio = dsCurrentRatio
-        .sqlContext().sql("SELECT code, currentratio, year, quarter FROM currentratio_view" + whereClause);
+        .sqlContext().sql("SELECT code, name, currentratio, year, quarter FROM currentratio_view" + whereClause);
     dsEpsg = dsEpsg
-        .sqlContext().sql("SELECT code, epsg, year, quarter FROM epsg_view" + whereClause);
+        .sqlContext().sql("SELECT code, name, epsg, year, quarter FROM epsg_view" + whereClause);
     dsTurnover = dsTurnover
-        .sqlContext().sql("SELECT code, currentasset_turnover, year, quarter FROM turnover_view" + whereClause);
+        .sqlContext().sql("SELECT code, name, currentasset_turnover, year, quarter FROM turnover_view" + whereClause);
+
+    // Cleanup rows
+
+    dsBasics = dsBasics.map(new MapFunction<Row, Row>() {
+      @Override
+      public Row call(Row row) throws Exception {
+        String code = row.getString(0); // code
+        String name = row.getString(1); // name
+        name = name.replaceAll(" ", "").replaceAll("Ａ", "A");
+        return RowFactory.create(code, name);
+      }
+    }, RowEncoder.apply(dsBasics.schema()));
+
+    MapFunction<Row, Row> cleanupSumType = new MapFunction<Row, Row>() {
+      @Override
+      public Row call(Row row) throws Exception {
+        String code = row.getString(0); // code
+        String name = row.getString(1); // name
+        name = name.replaceAll(" ", "").replaceAll("Ａ", "A");
+        double sum = 0D;
+        try {
+          sum = row.getDouble(2); // value to sum
+        } catch (NullPointerException npe) {}
+        long year = 0L;
+        try {
+          year = row.getLong(3); // year
+        } catch (NullPointerException npe) {}
+        long quarter = 0L;
+        try {
+          quarter = row.getLong(4); // quarter
+        } catch (NullPointerException npe) {}
+        return RowFactory.create(code, name, sum, year, quarter);
+      }
+    };
+
+    dsRoe = dsRoe.map(cleanupSumType, RowEncoder.apply(dsRoe.schema()));
+    dsCashflowRatio = dsCashflowRatio.map(cleanupSumType, RowEncoder.apply(dsCashflowRatio.schema()));
+    dsCurrentRatio = dsCurrentRatio.map(cleanupSumType, RowEncoder.apply(dsCurrentRatio.schema()));
+    dsEpsg = dsEpsg.map(cleanupSumType, RowEncoder.apply(dsEpsg.schema()));
+    dsTurnover = dsTurnover.map(cleanupSumType, RowEncoder.apply(dsTurnover.schema()));
 
     // Remove duplicate rows
 
@@ -106,11 +152,11 @@ public class StockSumService implements Serializable {
     // Summing
 
     Dataset<Row> summed = joined
-            .groupBy("code", "year")
-            .agg(
-                    expr("mySum(roe)"), expr("mySum(cashflowratio)"), expr("mySum(currentratio)"),
-                    expr("mySum(epsg)"), expr("mySum(currentasset_turnover)")
-            );
+        .groupBy("code", "year")
+        .agg(
+            expr("mySum(roe)"), expr("mySum(cashflowratio)"), expr("mySum(currentratio)"),
+            expr("mySum(epsg)"), expr("mySum(currentasset_turnover)")
+        );
 
     // Return
 
