@@ -149,13 +149,13 @@ function init_echart() {
     }
 
     var echartLine = echarts.init(document.getElementById('echart_line'))
-    var xAxisdata = [],seriesdata_hs = [],seriesdata_zz = [],seriesdata_rotation=[]
+    var xAxisdata = [],seriesdata_hs = [],seriesdata_zz = [],seriesdata_rotation=[],seriesdata_rotation2=[]
 
     $.when(
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/tow-eight-rotation",
+            url: "http://10.20.118.28:9002/tow-eight-rotation",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -170,6 +170,7 @@ function init_echart() {
                         seriesdata_hs.push(dataresult[i].hsMoney);
                         seriesdata_zz.push(dataresult[i].zzMoney);
                         seriesdata_rotation.push(dataresult[i].rotationMoney);
+                        seriesdata_rotation2.push(dataresult[i].rotationMoeny2);
                     }
                 }
             },
@@ -186,18 +187,18 @@ function init_echart() {
                 trigger: 'axis'
             },
             legend: {
-                data: ['hsMoney', 'zzMoney','rotationMoney']
+                data: ['沪深300','中证500','R1','R2']
+            },
+            grid: {
+                left: '3%',
+                right: '3%',
+                bottom: '10%',
+                containLabel: true
             },
             toolbox: {
                 show: true,
                 feature: {
                     mark: {
-                        show: true
-                    },
-                    dataZoom: {
-                        show: true
-                    },
-                    dataView: {
                         show: true
                     },
                     magicType: {
@@ -206,9 +207,6 @@ function init_echart() {
                     },
                     restore: {
                         show: true
-                    },
-                    saveAsImage: {
-                        show: true
                     }
                 }
             },
@@ -216,34 +214,40 @@ function init_echart() {
             dataZoom: {
                 show: true,
                 realtime: true,
-                start: 20,
-                end: 80
+                start: 0,
+                end: 100
             },
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
                 data: xAxisdata
             },
-            yAxis: [
+            yAxis:
                 {
                     type: 'value'
-                    }],
+                    },
             series: [
                 {
-                    name: 'hsMoney',
+                    name: '沪深300',
                     type: 'line',
                     data: seriesdata_hs
                         },
                 {
-                    name: 'zzMoney',
+                    name: '中证500',
                     type: 'line',
                     data: seriesdata_zz
                         },
                 {
-                    name: 'rotationMoney',
+                    name: 'R1',
                     type: 'line',
                     data: seriesdata_rotation
+                        },
+                {
+                    name: 'R2',
+                    type: 'line',
+                    data: seriesdata_rotation2
                         }
+                
                ]
         });        
         /* 

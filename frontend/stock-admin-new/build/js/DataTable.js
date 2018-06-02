@@ -327,24 +327,11 @@ function init_DataTables() {
     $('#datatable-keytable').DataTable({
         keys: true
     });
-
     $('#datatable-responsive').DataTable();
-
-
-    $('#datatable-scroller').DataTable({
-        ajax: "js/datatables/json/scroller-demo.json",
-        deferRender: true,
-        scrollY: 380,
-        scrollCollapse: true,
-        scroller: true
-    });
-
     $('#datatable-fixed-header').DataTable({
         fixedHeader: true
     });
-
     var $datatable = $('#datatable-checkbox');
-
     $datatable.dataTable({
         'order': [[1, 'asc']],
         'columnDefs': [
@@ -352,7 +339,7 @@ function init_DataTables() {
                 orderable: false,
                 targets: [0]
             }
-				  ]
+			]
     });
 
     $datatable.on('draw.dt', function () {
