@@ -40,7 +40,7 @@ def saveToDatabase(startTime, endTime):
         history_scale.to_sql(code[0], engine, if_exists='append')
 
 
-thread1 = myThread('2000-01-01', '2018-03-14')
+thread1 = myThread('2018-03-28', '2018-04-15')
 # 开启新线程
 thread1.start()
 print("所有线程都已启动!")

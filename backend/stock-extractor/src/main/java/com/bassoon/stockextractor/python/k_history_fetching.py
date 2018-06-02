@@ -34,9 +34,9 @@ def saveToDatabase(threadName, threadID, startTime, endTime):
         history_hfq.to_sql(threadName, engine, if_exists='append')
 
 
-thread1 = myThread("hfq", "stock_k_data_hfq", '2000-01-01', '2018-03-07')
-thread2 = myThread("qfq", "stock_k_data_qfq", '2000-01-01', '2018-03-07')
-thread3 = myThread("none", "stock_k_data_none", '2000-01-01', '2018-03-07')
+thread1 = myThread("hfq", "stock_k_data_hfq", '2017-04-26', '2018-04-16')
+thread2 = myThread("qfq", "stock_k_data_qfq", '2017-04-26', '2018-04-16')
+thread3 = myThread("none", "stock_k_data_none", '2017-04-26', '2018-04-16')
 # 开启新线程
 thread1.start()
 thread2.start()

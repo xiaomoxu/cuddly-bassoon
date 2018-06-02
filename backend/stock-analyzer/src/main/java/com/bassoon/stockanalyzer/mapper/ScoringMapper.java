@@ -1,5 +1,6 @@
 package com.bassoon.stockanalyzer.mapper;
 
+import com.bassoon.stockanalyzer.domain.BasicStock;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -7,10 +8,11 @@ import java.util.List;
 @Mapper
 public interface ScoringMapper {
     @Results({
-            @Result(column = "roe", property = "Double"),
+            @Result(column = "roe", property = "roe"),
+            @Result(column = "gross_profit_rate", property = "grossProfitRate"),
     })
     @Select("select roe , gross_profit_rate from stock_profit_data where code=#{code} and year = #{year}")
-    public List<Double> getRoeByYear(@Param("code") String code, @Param("year") int year);
+    public List<BasicStock> getRoeByYear(@Param("code") String code, @Param("year") int year);
 
 
     @Results({
@@ -29,7 +31,7 @@ public interface ScoringMapper {
             @Result(column = "currentratio", property = "Double"),
     })
     @Select("select currentratio from stock_debtpay_data where code=#{code} and year = #{year}")
-    public List<Double> getCurrentRatioByYear(@Param("code") String code, @Param("year") int year);
+    public List<Double> getCurrentDebtRatioByYear(@Param("code") String code, @Param("year") int year);
 
     @Results({
             @Result(column = "currentasset_turnover", property = "Double"),

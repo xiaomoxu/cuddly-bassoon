@@ -102,12 +102,12 @@ public class AnalyzerController {
         return nodeList;
     }
 
-    @GetMapping(value = "/stock-selector/{year}", produces = "application/json;charset=UTF-8")
-    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
-    public List<StockScoreValue> getSelectorStockList(HttpServletResponse rsp, @PathVariable int year) {
-        List<StockScoreValue> nodeList = scorePolicyService.scoring(year);
-        return nodeList;
-    }
+//    @GetMapping(value = "/stock-selector/{year}", produces = "application/json;charset=UTF-8")
+//    @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")
+//    public List<StockScoreValue> getSelectorStockList(HttpServletResponse rsp, @PathVariable int year) {
+//        List<StockScoreValue> nodeList = scorePolicyService.scoring(year);
+//        return nodeList;
+//    }
 
     @GetMapping(value = "/stock-index/{code}", produces = "application/json;charset=UTF-8")
     @CrossOrigin(origins = "*", exposedHeaders = "X-Total-Count")

@@ -30,10 +30,13 @@ public class SparkConfig {
     @Value("${hadoop.home.dir}")
     private String hadoopHome;
 
+    @Value("${jar.file.path}")
+    private String jarFile;
+
     @Bean
     public SparkConf sparkConf() {
         System.setProperty("hadoop.home.dir", hadoopHome);//好像只有针对windwos系统有效果
-        return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri);
+        return new SparkConf().setAppName(appName).set("spark.cores.max", cores).setMaster(masterUri).setJars(new String[]{jarFile});
     }
 
     @Bean
