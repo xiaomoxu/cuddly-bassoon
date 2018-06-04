@@ -3,7 +3,7 @@ function init_indextop() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-index/000001,000300,000905,399006,000016,399001",
+            url: "http://10.20.118.28:9002/stock-index/000001,000300,000905,399006,000016,399001",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -65,7 +65,7 @@ function init_pie1() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-static/industry",
+            url: "http://10.20.118.28:9002/stock-static/industry",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -172,7 +172,7 @@ function init_pie2() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-static/concept",
+            url: "http://10.20.118.28:9002/stock-static/concept",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {                
@@ -271,7 +271,7 @@ function init_addnews() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-news",
+            url: "http://10.20.118.28:9002/stock-news",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -354,7 +354,7 @@ function init_echartareapro() {
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-static/province",
+            url: "http://10.20.118.28:9002/stock-static/province",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -851,7 +851,7 @@ function init_addMap(){
         $.ajax({
             type: "get",
             async: false,
-            url: "http://10.48.6.219:9002/stock-static/city",
+            url: "http://10.20.118.28:9002/stock-static/city",
             dataType: "json",
             timeout: 1000,
             beforeSend: function (xhr) {
@@ -993,7 +993,7 @@ function init_selDate(){
     
     var selValue = new Date();  
     var endYear = selValue.getFullYear();
-    for (var i = 2014; i <= endYear-1; i++) {  
+    for (var i = 2014; i <= endYear; i++) {  
         $("#year").append("<option>"+i+"</option>");  
     }
     
@@ -1001,10 +1001,10 @@ function init_selDate(){
 
 function btnrep(){
     
-    
-    var urlpara=$("#year ").val(); 
-    var urlajax1 = "http://10.48.6.219:9002/scope/"+urlpara; //table
-    var urlajax2 = "http://10.48.6.219:9002/accum/"+urlpara; //chart
+    var urlpara=$("#year").val();
+    console.log(urlpara);
+    var urlajax1 = "http://10.20.118.28:9002/scope/"+urlpara; //table
+    var urlajax2 = "http://10.20.118.28:9002/accum/"+urlpara; //chart
     
     console.log(urlajax1+"<<<<<>>>>>"+urlajax2);
     var echartLineindex = echarts.init(document.getElementById('echart_line_index'))
@@ -1017,69 +1017,31 @@ function btnrep(){
     var seriesdata_tt=[];
     
     
-    $.when(
-        
-        $.ajax({ //chart 
-            type: "get",
-            async: false,
-            url: urlajax2,
-            dataType: "json",
-            timeout: 1000,
-            beforeSend: function (xhr) {
-                //echartLineindex.showLoading();
-            },
-            success: function (selstockdt) {
-                //echartLineindex.hideLoading();
-                console.log(selstockdt)
-                if (selstockdt) {
-                    for (var i = 0; i < selstockdt.length; i++) {
-                        xAxisdataxx.push(selstockdt[i].date);
-                        seriesdatayy.push((selstockdt[i].value).toFixed(2));
-                    }
-                }
-                console.log(seriesdatayy);
-            },
-            error: function (errorMsg) {
-                console.log("data get failed");
-            }
-        })).done(function () {
-        //echartLine.hideLoading();
-        console.log("done");
-             ///////////////////////   
-         echartLineindex.setOption({
-                    xAxis: {
-                        type: 'category',
-                        data:xAxisdataxx
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [{
-                        data:seriesdatayy, 
-                        type: 'line'
-                    }]
-            });
-                ///////////////////////
-        
-    
-    }).fail(function () {
-        echartLineindex.hideLoading();
-        alert("不能取得数据");        
-        console.log("we failed to get the data for this echart!");　　　　
-    });
-    
-    
-       
-}
-
-function init_indextable(){
-    var tablesDataf=[];
     //////////////
+    var deftUrl = "http://10.20.118.28:9002/scope/"+urlpara;
+    var tablesDataf=[];
+     
+    var datatable = $("#datatable").dataTable();
+    if (datatable) {  
+         datatable.fnClearTable();
+         datatable.fnDestroy();
+    } 
+    
      $('#datatable').dataTable({
-
-            "ajax": {
+         "info":false,
+         //"pagingType":"simple",
+         "autoWidth":true,
+         "searching":false,
+         "columnDefs": [
+                {
+                    orderable: false,
+                    targets: [0]
+                }
+                ],
+         "bLengthChange":false,
+         "ajax": {
                 "type": "GET",
-                "url": "http://10.48.6.219:9002/scope/2014",
+                "url": deftUrl,
                 "dataType": "json",
                 "contentType": "application/x-www-form-urlencoded; charset=UTF-8",
                 "dataSrc": function (dataresulttable) {
@@ -1095,8 +1057,7 @@ function init_indextable(){
                                 debtCurrentRatio:(dataresulttable[i].filterCondition.debtCurrentRatio).toFixed(2),
                                 epsg:(dataresulttable[i].filterCondition.epsg).toFixed(2),
                                 currentAssetTurnover:(dataresulttable[i].filterCondition.currentAssetTurnover).toFixed(2),
-                            })
-                            
+                            })                            
                         }
                 console.log(tablesDataf);
                 return tablesDataf;
@@ -1143,41 +1104,69 @@ function init_indextable(){
                 }
                 ]
         });
-
-
-
-        $('#datatable-keytable').DataTable({
-            keys: true
-        });
-        $('#datatable-responsive').DataTable();
-        $('#datatable-fixed-header').DataTable({
-            fixedHeader: true
-        });
-        var $datatable = $('#datatable-checkbox');
     
-        $datatable.dataTable({
-            'order': [[1, 'asc']],
-            'columnDefs': [
-                {
-                    orderable: false,
-                    targets: [0]
+    
+    
+    $.when(
+        $.ajax({ //chart 
+            type: "get",
+            async: false,
+            url: urlajax2,
+            dataType: "json",
+            timeout: 1000,
+            beforeSend: function (xhr) {
+                //echartLineindex.showLoading();
+            },
+            success: function (selstockdt) {
+                //echartLineindex.hideLoading();
+                console.log(selstockdt)
+                if (selstockdt) {
+                    for (var i = 0; i < selstockdt.length; i++) {
+                        xAxisdataxx.push(selstockdt[i].date);
+                        seriesdatayy.push((selstockdt[i].value).toFixed(2));
+                    }
                 }
-                ]
-        });
-
-        $datatable.on('draw.dt', function () {
-            $('checkbox input').iCheck({
-                checkboxClass: 'icheckbox_flat-green'
+                console.log(seriesdatayy);
+            },
+            error: function (errorMsg) {
+                console.log("data get failed");
+            }
+        })).done(function () {
+        //echartLine.hideLoading();
+        console.log("done");
+             ///////////////////////   
+         echartLineindex.setOption({
+                 grid:{
+                        x:60,
+                        y:6,
+                        x2:0,
+                        y2:30,
+                        borderWidth:1
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data:xAxisdataxx
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data:seriesdatayy, 
+                        type: 'line'
+                    }]
             });
-        });
-
-        //TableManageButtons.init();
+                ///////////////////////
     
-    ////////////
+    }).fail(function () {
+        echartLineindex.hideLoading();
+        alert("不能取得数据");        
+        console.log("we failed to get the data for this echart!");　　　　
+    });
     
     
-    
+       
 }
+
 
 $(document).ready(function () {
     
@@ -1206,7 +1195,6 @@ $(document).ready(function () {
     });   
     
     init_selDate();
-    init_indextable();
     init_indextop();
     btnrep();
     init_echartareapro();
